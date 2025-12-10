@@ -1,8 +1,13 @@
+// assets/logic/reservation.js
+
 document.addEventListener('DOMContentLoaded', () => {
     console.log('Système de réservation chargé 💅');
 
-    // --- 1. VARIABLES & MAPPING ---
+    // --- VARIABLES GLOBALES ---
     let currentStep = 1;
+    const totalSteps = 4;
+
+    // --- GESTION DU STEPPER (Navigation Corrigée) ---
 
     // Dictionnaire pour lier le numéro de l'étape à l'ID HTML exact
     const stepMapping = {
@@ -12,41 +17,16 @@ document.addEventListener('DOMContentLoaded', () => {
         4: 'step-payment'
     };
 
-
-    // --- 2. FONCTIONS DE VALIDATION (Celle qui manquait !) ---
-    function validateStep(step) {
-        // Validation Étape 1 : Au moins un service coché ?
-        if (step === 1) {
-            // On utilise la classe CSS spécifique
-            const checked = document.querySelectorAll('.service-checkbox:checked');
-            if (checked.length === 0) {
-                alert("Veuillez sélectionner au moins une prestation.");
-                return false;
-            }
-        }
-
-        // Validation Étape 2 : Date remplie ?
-        if (step === 2) {
-            // On cherche l'input date (par ID Symfony ou type générique)
-            const dateInput = document.getElementById('reservation_dateRdv') || document.querySelector('input[type="date"]');
-            if (dateInput && !dateInput.value) {
-                alert("Veuillez choisir une date.");
-                return false;
-            }
-        }
-
-        return true; // Tout est bon
-    }
-
-
-    // --- 3. FONCTIONS DE NAVIGATION (Globales pour onclick) ---
-
-    // Fonction globale accessible depuis le HTML
     window.nextStep = function(stepTarget) {
-        // On valide l'étape PRÉCÉDENTE (stepTarget - 1) avant d'avancer
+        console.log("Tentative passage à l'étape :", stepTarget); // Debug
+
+        // 1. Validation de l'étape actuelle avant de bouger
+        // (On valide l'étape d'avant, donc stepTarget - 1)
         if (!validateStep(stepTarget - 1)) {
-            return; // Stop si pas valide
+            return; // On arrête tout si pas valide
         }
+
+        // 2. Changement d'affichage
         goToStep(stepTarget);
     };
 
@@ -54,35 +34,65 @@ document.addEventListener('DOMContentLoaded', () => {
         goToStep(stepTarget);
     };
 
-    // Fonction interne pour gérer l'affichage
     function goToStep(stepNumber) {
-        // Masquer toutes les étapes (fieldset)
-        document.querySelectorAll('fieldset').forEach(el => el.style.display = 'none');
+        // 1. On masque TOUTES les étapes pour éviter les conflits
+        const allSteps = document.querySelectorAll('fieldset'); // ou .step-section
+        allSteps.forEach(el => el.style.display = 'none');
 
-        // Afficher la cible
+        // 2. On récupère l'ID correspondant au numéro
         const targetId = stepMapping[stepNumber];
         const targetElement = document.getElementById(targetId);
 
+        // 3. Si l'élément existe, on l'affiche
         if (targetElement) {
             targetElement.style.display = 'block';
-            currentStep = stepNumber;
+            currentStep = stepNumber; // On met à jour la variable globale
 
-            // Remonter en haut de page
+            // Petit bonus : remonter en haut de page (UX)
             window.scrollTo(0, 0);
 
-            // Si on arrive au récapitulatif, on le met à jour
-            if (stepNumber === 4) {
-                updateFinalSummary();
-            }
+            // Si on arrive au récap (Etape 4), on met à jour le texte
+            if (stepNumber === 4) updateFinalSummary();
         } else {
-            console.error("Erreur: Impossible de trouver l'étape avec l'ID " + targetId);
+            console.error("ERREUR CRITIQUE : Impossible de trouver l'élément avec l'ID : " + targetId);
+            alert("Erreur technique : L'étape suivante est introuvable.");
         }
     }
 
 
-    // --- 4. CALCULATEUR DE PRIX (Total) ---
+
+    function validateStep(step) {
+        // Étape 1 : Au moins un service coché ?
+        if (step === 1) {
+            // CORRECTION : On utilise la classe '.service-checkbox' au lieu du 'name'
+            const checked = document.querySelectorAll('.service-checkbox:checked');
+
+            console.log("Cases cochées :", checked.length); // Pour le debug
+
+            if (checked.length === 0) {
+                alert("Veuillez sélectionner au moins une prestation pour continuer.");
+                return false; // Bloque le passage à l'étape suivante
+            }
+        }
+        // Étape 2 : Date remplie ?
+        if (step === 2) {
+            const dateInput = document.getElementById('reservation_dateRdv'); // ID généré par Symfony
+            // Astuce : Si l'ID est différent, essayez document.querySelector('input[type="date"]')
+
+            if (dateInput && !dateInput.value) {
+                alert("Veuillez choisir une date dans le calendrier.");
+                return false;
+            }
+        }
+        return true;
+    }
+
+    // --- CALCULATEUR DE PRIX & DURÉE ---
+    // CORRECTION : On cible la classe CSS au lieu du "name" qui change avec Symfony
     const servicesInputs = document.querySelectorAll('.service-checkbox');
     const deposeInput = document.querySelector('.js-depose');
+    // Debug : Vérifions qu'on trouve bien les cases
+    console.log('Nombre de services trouvés :', servicesInputs.length);
 
     function calculateTotal() {
         let totalPrix = 0;
@@ -91,20 +101,32 @@ document.addEventListener('DOMContentLoaded', () => {
         // Somme des services
         servicesInputs.forEach(input => {
             if (input.checked) {
-                totalPrix += parseFloat(input.dataset.prix || 0);
-                totalMinutes += parseInt(input.dataset.duree || 0);
+                // On convertit bien en Float/Int car les attributs data sont des chaînes
+                // Si data-prix n'existe pas, on met 0 par sécurité
+                let prix = parseFloat(input.dataset.prix || 0);
+                let duree = parseInt(input.dataset.duree || 0);
+
+                totalPrix += prix;
+                totalMinutes += duree;
             }
         });
 
         // Ajout dépose
         if (deposeInput && deposeInput.checked) {
-            totalPrix += parseFloat(deposeInput.dataset.prix || 0);
-            totalMinutes += parseInt(deposeInput.dataset.duree || 0);
+            // On s'assure de bien lire les données (sinon 0)
+            let prixDepose = parseFloat(deposeInput.dataset.prix || 0);
+            let dureeDepose = parseInt(deposeInput.dataset.duree || 0);
+
+            console.log("Dépose ajoutée :", prixDepose, "€", dureeDepose, "min"); // Debug
+
+            totalPrix += prixDepose;
+            totalMinutes += dureeDepose;
         }
 
-        // Formatage Heures/Minutes
+        // Affichage (Conversion minutes -> Heures)
         const hours = Math.floor(totalMinutes / 60);
         const minutes = totalMinutes % 60;
+        // Formatage propre : "1h05" ou "45min"
         let timeString = '';
         if (hours > 0) {
             timeString += hours + 'h';
@@ -113,18 +135,46 @@ document.addEventListener('DOMContentLoaded', () => {
             timeString = minutes + 'min';
         }
 
-        // Mise à jour DOM
+        // Mise à jour du DOM
         const displayTime = document.getElementById('total-time');
         const displayPrice = document.getElementById('total-price');
 
-        if(displayTime) displayTime.textContent = timeString || "0min";
+        if(displayTime) displayTime.textContent = timeString;
         if(displayPrice) displayPrice.textContent = totalPrix + "€";
     }
 
-    // Écouteurs pour le calcul auto
+    // Écouteurs d'événements
     servicesInputs.forEach(input => input.addEventListener('change', calculateTotal));
-    if(deposeInput) deposeInput.addEventListener('change', calculateTotal);
+    if(deposeInput) {
+        deposeInput.addEventListener('change', calculateTotal);
+    }
 
+    // --- GESTION DU PAIEMENT (CB vs Sur place) ---
+    window.togglePaymentFields = function() {
+        const isOnline = document.getElementById('pay_online').checked;
+        const cardContainer = document.getElementById('card-details');
+
+        if (!cardContainer) return; // Sécurité si le bloc n'existe pas
+
+        const cardInputs = cardContainer.querySelectorAll('input');
+
+        if (isOnline) {
+            cardContainer.style.display = 'block';
+            cardInputs.forEach(input => input.setAttribute('required', 'required'));
+        } else {
+            cardContainer.style.display = 'none';
+            cardInputs.forEach(input => {
+                input.removeAttribute('required');
+                input.value = ''; // Reset valeur
+            });
+        }
+    };
+
+    // Attacher l'événement aux boutons radio paiement
+    const radioOnline = document.getElementById('pay_online');
+    const radioOnsite = document.getElementById('pay_onsite');
+    if(radioOnline) radioOnline.addEventListener('change', window.togglePaymentFields);
+    if(radioOnsite) radioOnsite.addEventListener('change', window.togglePaymentFields);
 
     // --- 5. RÉCAPITULATIF FINAL (Étape 4) ---
     function updateFinalSummary() {
@@ -176,22 +226,6 @@ document.addEventListener('DOMContentLoaded', () => {
             </div>
         `;
     }
-
-    // --- 6. GESTION PAIEMENT (CB vs Sur Place) ---
-    // Cette fonction est appelée par les boutons radio avec onchange="togglePayment(...)"
-    // Mais on peut aussi la définir globalement pour être sûr
-    window.togglePayment = function(isOnline) {
-        const block = document.getElementById('card-details-block');
-        if(!block) return;
-
-        block.style.display = isOnline ? 'block' : 'none';
-
-        const inputs = block.querySelectorAll('input');
-        inputs.forEach(i => {
-            if(isOnline) i.setAttribute('required', 'required');
-            else i.removeAttribute('required');
-        });
-    };
 
     // --- 7. GESTION DYNAMIQUE DU CALENDRIER ---
 

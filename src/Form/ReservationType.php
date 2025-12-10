@@ -47,7 +47,7 @@ class ReservationType extends AbstractType
             ])
 
             // --- BLOC 3 : VISITEUR (Non requis par défaut, géré par validation groups si on voulait pousser plus loin) ---
-            ->add('guestFirstname', TextType::class, ['required' => false, 'label' => 'Prénom'])
+            ->add('guestFirstname', TextType::class, ['required' => true, 'label' => 'Prénom'])
             ->add('guestLastname', TextType::class, ['required' => false, 'label' => 'Nom'])
             ->add('guestEmail', EmailType::class, ['required' => false, 'label' => 'Email de confirmation'])
             ->add('guestPhone', TelType::class, ['required' => false, 'label' => 'Numéro de mobile'])
