@@ -16,7 +16,8 @@ final class FormController extends AbstractController
     public function index(Request $request, EntityManagerInterface $em): Response
     {
         $reservation = new Reservation();
-        $form = $this->createForm(ReservationType::class, $reservation);
+        $form = $this->createForm(ReservationType::class, $reservation,[
+            'allow_extra_fields' => true]);
 
         $form->handleRequest($request);
 
@@ -52,6 +53,19 @@ final class FormController extends AbstractController
             $reservation->setReference('RDV-' . uniqid());
             $reservation->setStatus('CONFIRMED');
 
+            // 1. On récupère la date choisie (ex: 2025-12-12 00:00:00)
+            $dateRdv = $reservation->getDateRdv();
+
+            // 2. On récupère l'heure envoyée par le select HTML (ex: "14:30")
+            $timeString = $request->request->get('time_slot');
+
+            if ($timeString) {
+                // On sépare les heures et les minutes
+                [$hours, $minutes] = explode(':', $timeString);
+
+                // On met à jour l'objet Date avec la bonne heure
+                $dateRdv->setTime($hours, $minutes);
+            }
             // 3. Sauvegarde
             $em->persist($reservation);
             $em->flush();
@@ -67,9 +81,59 @@ final class FormController extends AbstractController
                 'date' => $reservation->getDateRdv()->format('d/m/Y à H:i')
             ]);
         }
+        // AJOUT : Définition des horaires (Simulé ici, pourrait venir de la BDD)
+        $openingHours = [
+            'Lundi'    => '09:00 - 19:00',
+            'Mardi'    => '09:00 - 19:00',
+            'Mercredi' => '09:00 - 19:00',
+            'Jeudi'    => '09:00 - 19:00',
+            'Vendredi' => '09:00 - 19:00', // Nocturne !
+            'Samedi'   => '09:00 - 14:00', // Journée courte
+            'Dimanche' => 'Fermé',
+        ];
 
-        return $this->render('form/index.html.twig', [
+        $reservation = new Reservation();
+        $form = $this->createForm(ReservationType::class, $reservation, [
+            'allow_extra_fields' => true // 1. Autoriser les champs manuels (time_slot)
+        ]);
+
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+
+            // 2. Récupérer l'heure manuelle depuis la Requête (pas depuis le Form)
+            $timeSlot = $request->request->get('time_slot');
+
+            if (!$timeSlot) {
+                // Gestion d'erreur si l'heure est vide
+                $this->addFlash('error', 'Veuillez sélectionner un horaire.');
+                return $this->redirectToRoute('app_reservation');
+            }
+
+            // 3. Fusionner Date + Heure
+            // $reservation->getDateRdv() contient ex: "2025-12-12 00:00:00"
+            // $timeSlot contient ex: "14:30"
+            $dateRdv = $reservation->getDateRdv();
+            [$hours, $minutes] = explode(':', $timeSlot);
+            $dateRdv->setTime($hours, $minutes);
+
+            // Calculs (Prix, Durée, etc.)
+            // ... (remettre votre code de calcul ici) ...
+
+            $em->persist($reservation);
+            $em->flush();
+
+            return $this->render('booking/success.html.twig', [
+                // ...
+            ]);
+        }
+
+        $stepOpen = ($form->isSubmitted() && !$form->isValid()) ? 4 : 1;
+
+        return $this->render('booking/index.html.twig', [
             'form' => $form->createView(),
+            'openingHours' => $openingHours,
+            'stepOpen' => $stepOpen
         ]);
     }
 }

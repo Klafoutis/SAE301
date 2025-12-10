@@ -52,25 +52,46 @@
             </div>
         </fieldset>
 
-
         <fieldset id="step-planning" class="card shadow-sm p-4 mb-4" style="display:none;">
             <legend><h2 class="h4 text-primary mb-3">2. Choisissez date et heure</h2></legend>
 
-            <div class="mb-4">
-                {{ form_label(form.dateRdv) }}
-                {{ form_widget(form.dateRdv, {'attr': {'class': 'form-control form-control-lg'}}) }}
-            </div>
+            <div class="row">
+                <div class="col-md-7">
+                    <div class="mb-4">
+                        {{ form_label(form.dateRdv) }}
+                        {{ form_widget(form.dateRdv, {'attr': {'class': 'form-control form-control-lg'}}) }}
+                    </div>
 
-            <div class="mb-4">
-                <label for="time_slot" class="form-label">Horaires d'arrivée disponibles</label>
-                <select id="time_slot" name="time_slot" class="form-select form-select-lg" required>
-                    <option value="">-- Choisissez d'abord une date --</option>
-                </select>
-                <div class="form-text text-muted">
-                    Les horaires affichés prennent en compte la durée de vos soins et mon temps de trajet jusqu'à votre zone.
+                    <div class="mb-4">
+                        <label for="time_slot" class="form-label">Horaires d'arrivée disponibles</label>
+                        <select id="time_slot" name="time_slot" class="form-select form-select-lg" required disabled>
+                            <option value="">-- Choisissez d'abord une date --</option>
+                        </select>
+                        <div class="form-text text-muted">
+                            Les créneaux sont calculés selon la durée de vos soins.
+                        </div>
+                    </div>
                 </div>
-                <div id="no-slot-message" class="alert alert-warning mt-2" style="display:none;">
-                    Aucun créneau disponible ce jour-là pour une durée de <span id="error-duration"></span>. Essayez une autre date ou allégez votre panier.
+
+                <div class="col-md-5">
+                    <div class="card bg-light border-0">
+                        <div class="card-body">
+                            <h5 class="card-title text-secondary mb-3"><i class="fas fa-clock"></i> Horaires d'ouverture</h5>
+                            <ul class="list-group list-group-flush bg-transparent">
+                                {% for day, hours in openingHours %}
+                                    <li class="list-group-item bg-transparent d-flex justify-content-between px-0 py-1">
+                                        <span>{{ day }}</span>
+                                        <span class="fw-bold {{ hours == 'Fermé' ? 'text-danger' : 'text-dark' }}">
+                                            {{ hours }}
+                                        </span>
+                                    </li>
+                                {% endfor %}
+                            </ul>
+                            <div class="alert alert-warning mt-3 mb-0 small">
+                                <i class="fas fa-info-circle"></i> Fermé les jours fériés.
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
 
@@ -79,6 +100,7 @@
                 <button type="button" class="btn btn-primary" onclick="nextStep(3)">Valider le créneau &rarr;</button>
             </div>
         </fieldset>
+
 
 
         <fieldset id="step-info" class="card shadow-sm p-4 mb-4" style="display:none;">
@@ -196,12 +218,9 @@
                 </label>
             </div>
 
-            <button type="submit" class="btn btn-success btn-lg w-100 py-3 fw-bold text-uppercase shadow">
-                CONFIRMER LA RÉSERVATION
-            </button>
-
-            <div class="text-center mt-3">
-                <button type="button" class="btn btn-link text-muted btn-sm" onclick="prevStep(3)">Modifier mes infos</button>
+            <div class="d-flex justify-content-between">
+                <button type="button" class="btn btn-secondary" id="btn-back-3">Modifier</button>
+                <button type="submit" class="btn btn-success btn-lg">CONFIRMER</button>
             </div>
 
         </fieldset>
