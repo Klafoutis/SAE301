@@ -1,31 +1,31 @@
 <!DOCTYPE html>
 <html>
-    <head>
-        <meta charset="UTF-8">
-        <title>{% block title %}Welcome!{% endblock %}</title>
-        <link rel="icon" href="{{ asset('images/logo.svg') }}">
-        <link rel="preconnect" href="https://fonts.googleapis.com">
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-        <link href="https://fonts.googleapis.com/css2?family=Karla:ital,wght@0,200..800;1,200..800&display=swap" rel="stylesheet">
-        {% block stylesheets %}
-        {% endblock %}
+<head>
+    <meta charset="UTF-8">
+    <title>{% block title %}Welcome!{% endblock %}</title>
+    <link rel="icon" href="{{ asset('images/logo.svg') }}">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Karla:ital,wght@0,200..800;1,200..800&display=swap" rel="stylesheet">
+    {% block stylesheets %}
+    {% endblock %}
 
-        {% block javascripts %}
-            {% block importmap %}{{ importmap('app') }}{% endblock %}
-        {% endblock %}
-    </head>
-    <header>
+    {% block javascripts %}
+        {% block importmap %}{{ importmap('app') }}{% endblock %}
+    {% endblock %}
+</head>
+<header>
+    <div>
+        <a href="/"><img id="logo" src="{{ asset('images/logo.svg') }}"></a>
         <div>
-            <a href="/"><img id="logo" src="{{ asset('images/logo.svg') }}"></a>
-            <div>
-                <a href="/">Accueil</a>
-                <a href="#">Reservation</a>
-                <a href="#">Blog</a>
-                <a href="#">Back-office</a>
-            </div>
+            <a href="/">Accueil</a>
+            <a href="#">Reservation</a>
+            <a href="#">Blog</a>
+            <a href="#">Back-office</a>
         </div>
-    </header>
-    <body>
-        {% block body %}{% endblock %}
-    </body>
+    </div>
+</header>
+<body>
+{% block body %}{% endblock %}
+</body>
 </html>
