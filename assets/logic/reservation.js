@@ -50,26 +50,38 @@ document.addEventListener('DOMContentLoaded', () => {
     function validateStep(step) {
         // Étape 1 : Au moins un service coché ?
         if (step === 1) {
-            const checked = document.querySelectorAll('input[name="services[]"]:checked');
+            // CORRECTION : On utilise la classe '.service-checkbox' au lieu du 'name'
+            const checked = document.querySelectorAll('.service-checkbox:checked');
+
+            console.log("Cases cochées :", checked.length); // Pour le debug
+
             if (checked.length === 0) {
-                alert("Veuillez sélectionner au moins une prestation.");
-                return false;
+                alert("Veuillez sélectionner au moins une prestation pour continuer.");
+                return false; // Bloque le passage à l'étape suivante
             }
         }
+
         // Étape 2 : Date remplie ?
         if (step === 2) {
-            const dateInput = document.getElementById('date_rdv');
-            if (!dateInput.value) {
-                alert("Veuillez choisir une date.");
+            const dateInput = document.getElementById('reservation_dateRdv'); // ID généré par Symfony
+            // Astuce : Si l'ID est différent, essayez document.querySelector('input[type="date"]')
+
+            if (dateInput && !dateInput.value) {
+                alert("Veuillez choisir une date dans le calendrier.");
                 return false;
             }
         }
-        return true;
+
+        return true; // Tout est bon, on passe !
     }
 
     // --- CALCULATEUR DE PRIX & DURÉE ---
-    const servicesInputs = document.querySelectorAll('input[name="services[]"]');
-    const deposeInput = document.getElementById('depose_incluse');
+    // CORRECTION : On cible la classe CSS au lieu du "name" qui change avec Symfony
+    const servicesInputs = document.querySelectorAll('.service-checkbox');
+    const deposeInput = document.querySelector('.js-depose');
+
+    // Debug : Vérifions qu'on trouve bien les cases
+    console.log('Nombre de services trouvés :', servicesInputs.length);
 
     function calculateTotal() {
         let totalPrix = 0;
@@ -78,41 +90,53 @@ document.addEventListener('DOMContentLoaded', () => {
         // Somme des services
         servicesInputs.forEach(input => {
             if (input.checked) {
-                totalPrix += parseFloat(input.dataset.prix);
-                totalMinutes += parseInt(input.dataset.duree);
+                // On convertit bien en Float/Int car les attributs data sont des chaînes
+                // Si data-prix n'existe pas, on met 0 par sécurité
+                let prix = parseFloat(input.dataset.prix || 0);
+                let duree = parseInt(input.dataset.duree || 0);
+
+                totalPrix += prix;
+                totalMinutes += duree;
             }
         });
 
         // Ajout dépose
         if (deposeInput && deposeInput.checked) {
-            totalPrix += parseFloat(deposeInput.dataset.prix || 0);
-            totalMinutes += parseInt(deposeInput.dataset.duree || 0);
+            // On s'assure de bien lire les données (sinon 0)
+            let prixDepose = parseFloat(deposeInput.dataset.prix || 0);
+            let dureeDepose = parseInt(deposeInput.dataset.duree || 0);
+
+            console.log("Dépose ajoutée :", prixDepose, "€", dureeDepose, "min"); // Debug
+
+            totalPrix += prixDepose;
+            totalMinutes += dureeDepose;
         }
 
         // Affichage (Conversion minutes -> Heures)
         const hours = Math.floor(totalMinutes / 60);
         const minutes = totalMinutes % 60;
-        const timeString = (hours > 0 ? hours + 'h' : '') + (minutes > 0 ? minutes.toString().padStart(2, '0') : '');
+        // Formatage propre : "1h05" ou "45min"
+        let timeString = '';
+        if (hours > 0) {
+            timeString += hours + 'h';
+            if (minutes > 0) timeString += minutes.toString().padStart(2, '0');
+        } else {
+            timeString = minutes + 'min';
+        }
 
         // Mise à jour du DOM
         const displayTime = document.getElementById('total-time');
         const displayPrice = document.getElementById('total-price');
 
-        if(displayTime) displayTime.textContent = timeString || "0min";
+        if(displayTime) displayTime.textContent = timeString;
         if(displayPrice) displayPrice.textContent = totalPrix + "€";
-
-        // Mise à jour du récap final (Etape 4)
-        const finalSummary = document.getElementById('final-summary');
-        if(finalSummary) {
-            finalSummary.innerHTML = `<strong>Total à payer : ${totalPrix}€</strong> <br> Durée estimée : ${timeString}`;
-        }
     }
 
-    // Écouteurs d'événements sur les cases à cocher
+    // Écouteurs d'événements
     servicesInputs.forEach(input => input.addEventListener('change', calculateTotal));
-    if(deposeInput) deposeInput.addEventListener('change', calculateTotal);
-
-
+    if(deposeInput) {
+        deposeInput.addEventListener('change', calculateTotal);
+    }
     // --- GESTION DU PAIEMENT (CB vs Sur place) ---
     window.togglePaymentFields = function() {
         const isOnline = document.getElementById('pay_online').checked;

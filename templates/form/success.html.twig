@@ -1,0 +1,22 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Confirmation{% endblock %}
+
+{% block body %}
+    <div class="container text-center py-5">
+        <div class="card shadow p-5 mx-auto" style="max-width: 600px;">
+            <div class="text-success mb-3">
+                <h1 class="display-1">✅</h1>
+            </div>
+
+            <h2 class="mb-4">Merci {{ name }} !<br>Votre rendez-vous est confirmé.</h2>
+
+            <p class="lead text-muted mb-4">
+                Un email récapitulatif vient d'être envoyé à <strong>{{ email }}</strong>.<br>
+                Je serai chez vous le <strong>{{ date }}</strong>.
+            </p>
+
+            <a href="{{ path('app_reservation') }}" class="btn btn-primary">Retour à l'accueil</a>
+        </div>
+    </div>
+{% endblock %}
