@@ -1,0 +1,14 @@
+// Exemple de contenu SASS pour la manucure
+$primary-color: #d63384; // Rose
+
+body {
+    background-color: #f8f9fa;
+    font-family: sans-serif;
+}
+
+.btn-primary {
+    background-color: $primary-color;
+    border: none;
+}
+
+

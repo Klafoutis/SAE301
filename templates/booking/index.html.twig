@@ -1,0 +1,242 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Réservez votre manucure à domicile{% endblock %}
+
+{% block body %}
+    <div class="container py-5" style="max-width: 800px;">
+
+        <div class="text-center mb-5">
+            <h1 class="display-5 fw-bold">Réservez votre manucure à domicile</h1>
+            <p class="lead text-muted">
+                Composez votre soin sur mesure, choisissez votre créneau, et je m'occupe du reste. <br>
+                Détendez-vous, j'arrive chez vous !
+            </p>
+        </div>
+
+        {{ form_start(form, {'attr': {'id': 'reservation-form'}}) }}
+
+        <fieldset id="step-services" class="card shadow-sm p-4 mb-4">
+            <legend><h2 class="h4 text-primary mb-3">1. Choisissez vos soins</h2></legend>
+
+            <div class="services-list mb-4">
+                {% for child in form.services %}
+                    <div class="form-check custom-card mb-2">
+                        {{ form_widget(child, {'attr': {'class': 'form-check-input service-checkbox'}}) }}
+                        {{ form_label(child, null, {'label_attr': {'class': 'form-check-label'}}) }}
+                    </div>
+                {% endfor %}
+            </div>
+
+            <hr>
+
+            <div class="form-check form-switch bg-light p-3 rounded mb-3">
+                {{ form_widget(form.includeDepose, {'attr': {'class': 'form-check-input js-depose'}}) }}
+                <label class="form-check-label fw-bold" for="{{ form.includeDepose.vars.id }}">
+                    {{ form.includeDepose.vars.label }}
+                </label>
+                <div class="form-text text-muted small mt-1">
+                    Important : Cochez cette case pour que je prévoie les 20 min nécessaires au retrait de votre ancien vernis. Sans cela, la prestation pourrait être raccourcie.
+                </div>
+            </div>
+
+            <div id="sticky-summary" class="d-flex justify-content-between align-items-center bg-primary text-white p-3 rounded">
+                <div>
+                    <span class="fs-5">Total estimé : </span>
+                    <strong id="total-time" class="fs-4">0h00</strong>
+                    <span class="mx-2">-</span>
+                    <strong id="total-price" class="fs-4">0€</strong>
+                </div>
+                <button type="button" class="btn btn-light fw-bold" onclick="nextStep(2)">
+                    Voir les disponibilités &rarr;
+                </button>
+            </div>
+        </fieldset>
+
+        <fieldset id="step-planning" class="card shadow-sm p-4 mb-4" style="display:none;">
+            <legend><h2 class="h4 text-primary mb-3">2. Choisissez date et heure</h2></legend>
+
+            <div class="row">
+                <div class="col-md-7">
+                    <div class="mb-4">
+                        {{ form_label(form.dateRdv) }}
+                        {{ form_widget(form.dateRdv, {'attr': {'class': 'form-control form-control-lg'}}) }}
+                    </div>
+
+                    <div class="mb-4">
+                        <label for="time_slot" class="form-label">Horaires d'arrivée disponibles</label>
+                        <select id="time_slot" name="time_slot" class="form-select form-select-lg" required disabled>
+                            <option value="">-- Choisissez d'abord une date --</option>
+                        </select>
+                        <div class="form-text text-muted">
+                            Les créneaux sont calculés selon la durée de vos soins.
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-5">
+                    <div class="card bg-light border-0">
+                        <div class="card-body">
+                            <h5 class="card-title text-secondary mb-3"><i class="fas fa-clock"></i> Horaires d'ouverture</h5>
+                            <ul class="list-group list-group-flush bg-transparent">
+                                {% for day, hours in openingHours %}
+                                    <li class="list-group-item bg-transparent d-flex justify-content-between px-0 py-1">
+                                        <span>{{ day }}</span>
+                                        <span class="fw-bold {{ hours == 'Fermé' ? 'text-danger' : 'text-dark' }}">
+                                            {{ hours }}
+                                        </span>
+                                    </li>
+                                {% endfor %}
+                            </ul>
+                            <div class="alert alert-warning mt-3 mb-0 small">
+                                <i class="fas fa-info-circle"></i> Fermé les jours fériés.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="d-flex justify-content-between mt-4">
+                <button type="button" class="btn btn-outline-secondary" onclick="prevStep(1)">Retour</button>
+                <button type="button" class="btn btn-primary" onclick="nextStep(3)">Valider le créneau &rarr;</button>
+            </div>
+        </fieldset>
+
+
+
+        <fieldset id="step-info" class="card shadow-sm p-4 mb-4" style="display:none;">
+            <legend><h2 class="h4 text-primary mb-3">3. Vos informations & Adresse</h2></legend>
+
+            {% if app.user %}
+                <div class="alert alert-success mb-4">
+                    <i class="fas fa-user-check"></i> Vous réservez en tant que <strong>{{ app.user.firstname }}</strong>.
+                </div>
+            {% else %}
+                <div class="row g-3 mb-3">
+                    <div class="col-md-6">
+                        {{ form_row(form.guestFirstname) }}
+                    </div>
+                    <div class="col-md-6">
+                        {{ form_row(form.guestLastname) }}
+                    </div>
+                </div>
+                <div class="mb-3">
+                    {{ form_label(form.guestPhone) }}
+                    {{ form_widget(form.guestPhone, {'attr': {'class': 'form-control'}}) }}
+                    <div class="form-text">Utilisé uniquement pour vous prévenir de mon arrivée ou en cas de retard.</div>
+                </div>
+                <div class="mb-3">
+                    {{ form_row(form.guestEmail) }}
+                </div>
+            {% endif %}
+
+            <hr class="my-4">
+
+            <div class="mb-3">
+                {{ form_label(form.visitAddress) }}
+                {{ form_widget(form.visitAddress, {'attr': {'class': 'form-control'}}) }}
+                <div class="form-text">Je me déplace uniquement dans un rayon de 20km autour de Troyes.</div>
+            </div>
+
+            <div class="mb-3">
+                {{ form_row(form.comment) }}
+            </div>
+
+            <div class="alert alert-info py-2">
+                <small>ℹ️ L'artisane se déplacera à cette adresse.</small>
+            </div>
+
+            <div class="d-flex justify-content-between mt-4">
+                <button type="button" class="btn btn-outline-secondary" onclick="prevStep(2)">Retour</button>
+                <button type="button" class="btn btn-primary" onclick="nextStep(4)">Aller au récapitulatif &rarr;</button>
+            </div>
+        </fieldset>
+
+
+        <fieldset id="step-payment" class="card shadow-sm p-4 mb-4" style="display:none;">
+            <legend><h2 class="h4 text-primary mb-3">4. Paiement et Confirmation</h2></legend>
+
+            <div id="final-summary" class="alert alert-secondary mb-4">
+                Chargement du récapitulatif...
+            </div>
+
+            <div class="row g-2 align-items-end mb-4">
+                <div class="col-8">
+                    {{ form_row(form.promoCode) }}
+                </div>
+                <div class="col-4">
+                    <button type="button" class="btn btn-dark w-100 mb-3">Appliquer</button>
+                </div>
+            </div>
+
+            <hr>
+
+            <h5 class="mb-3">Moyen de paiement</h5>
+
+            <div class="form-check mb-2">
+                <input class="form-check-input" type="radio" name="payment_method_ui" id="pay_online" value="online" onchange="togglePayment(true)">
+                <label class="form-check-label fw-bold" for="pay_online">💳 Payer maintenant (Carte Bancaire)</label>
+                <div class="form-text mt-0">Débit immédiat et sécurisé. Remboursement intégral si annulation 24h avant.</div>
+            </div>
+
+            <div id="card-details-block" class="card bg-light p-3 ms-4 mb-3" style="display:none;">
+                <div class="mb-2">
+                    <label class="form-label small">Nom du titulaire</label>
+                    <input type="text" class="form-control form-control-sm" placeholder="MME JEANNE DUPONT">
+                </div>
+                <div class="mb-2">
+                    <label class="form-label small">Numéro de carte</label>
+                    <div class="input-group input-group-sm">
+                        <input type="text" class="form-control" placeholder="0000 0000 0000 0000" inputmode="numeric">
+                        <span class="input-group-text">🔒</span>
+                    </div>
+                    <div class="form-text x-small">🔒 Vos données sont chiffrées</div>
+                </div>
+                <div class="row g-2">
+                    <div class="col-6">
+                        <label class="form-label small">Date d'expiration</label>
+                        <input type="text" class="form-control form-control-sm" placeholder="MM / AA" maxlength="5">
+                    </div>
+                    <div class="col-6">
+                        <label class="form-label small">CVC (au dos)</label>
+                        <input type="text" class="form-control form-control-sm" placeholder="000" maxlength="3">
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-check mb-4">
+                <input class="form-check-input" type="radio" name="payment_method_ui" id="pay_onsite" value="onsite" checked onchange="togglePayment(false)">
+                <label class="form-check-label fw-bold" for="pay_onsite">🏠 Payer sur place (le jour J)</label>
+                <div class="form-text mt-0">Règlement en espèces, carte ou Paylib à la fin de la prestation.</div>
+            </div>
+
+            <hr>
+
+            <div class="form-check mb-4">
+                {{ form_widget(form.acceptCGU, {'attr': {'class': 'form-check-input'}}) }}
+                <label class="form-check-label small" for="{{ form.acceptCGU.vars.id }}">
+                    {{ form.acceptCGU.vars.label }}
+                </label>
+            </div>
+
+            <div class="d-flex justify-content-between">
+                <button type="button" class="btn btn-secondary" id="btn-back-3">Modifier</button>
+                <button type="submit" class="btn btn-success btn-lg">CONFIRMER</button>
+            </div>
+
+        </fieldset>
+
+        {{ form_end(form) }}
+    </div>
+
+    <script>
+        // Petit script inline pour le toggle (en plus de votre fichier JS principal)
+        function togglePayment(isOnline) {
+            const block = document.getElementById('card-details-block');
+            block.style.display = isOnline ? 'block' : 'none';
+
+            // Bonus : On rend les champs "fake" required seulement si affichés
+            const inputs = block.querySelectorAll('input');
+            inputs.forEach(i => isOnline ? i.setAttribute('required', 'required') : i.removeAttribute('required'));
+        }
+    </script>
+{% endblock %}

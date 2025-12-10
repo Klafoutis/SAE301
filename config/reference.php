@@ -1509,6 +1509,24 @@ namespace Symfony\Component\DependencyInjection\Loader\Configurator;
  *     generate_final_classes?: bool, // Default: true
  *     generate_final_entities?: bool, // Default: false
  * }
+ * @psalm-type SymfonycastsSassConfig = array{
+ *     root_sass?: list<scalar|null>,
+ *     binary?: scalar|null, // The Sass binary to use // Default: null
+ *     sass_options?: array{
+ *         style?: "compressed"|"expanded", // The style of the generated CSS: compressed or expanded. // Default: "expanded"
+ *         charset?: bool, // Whether to include the charset declaration in the generated Sass.
+ *         error_css?: bool, // Emit a CSS file when an error occurs.
+ *         source_map?: bool, // Whether to generate source maps. // Default: true
+ *         embed_sources?: bool, // Embed source file contents in source maps.
+ *         embed_source_map?: bool, // Embed source map contents in CSS. // Default: "%kernel.debug%"
+ *         load_path?: list<scalar|null>,
+ *         quiet?: bool, // Don't print warnings.
+ *         quiet_deps?: bool, // Don't print compiler warnings from dependencies.
+ *         stop_on_error?: bool, // Don't compile more files once an error is encountered.
+ *         trace?: bool, // Print full Dart stack traces for exceptions.
+ *     },
+ *     embed_sourcemap?: bool|null, // Deprecated: Option "embed_sourcemap" at "symfonycasts_sass.embed_sourcemap" is deprecated. Use "sass_options.embed_source_map" instead". // Default: null
+ * }
  * @psalm-type ConfigType = array{
  *     imports?: ImportsConfig,
  *     parameters?: ParametersConfig,
@@ -1522,6 +1540,7 @@ namespace Symfony\Component\DependencyInjection\Loader\Configurator;
  *     twig_extra?: TwigExtraConfig,
  *     security?: SecurityConfig,
  *     monolog?: MonologConfig,
+ *     symfonycasts_sass?: SymfonycastsSassConfig,
  *     "when@dev"?: array{
  *         imports?: ImportsConfig,
  *         parameters?: ParametersConfig,
@@ -1538,6 +1557,7 @@ namespace Symfony\Component\DependencyInjection\Loader\Configurator;
  *         security?: SecurityConfig,
  *         monolog?: MonologConfig,
  *         maker?: MakerConfig,
+ *         symfonycasts_sass?: SymfonycastsSassConfig,
  *     },
  *     "when@prod"?: array{
  *         imports?: ImportsConfig,
@@ -1552,6 +1572,7 @@ namespace Symfony\Component\DependencyInjection\Loader\Configurator;
  *         twig_extra?: TwigExtraConfig,
  *         security?: SecurityConfig,
  *         monolog?: MonologConfig,
+ *         symfonycasts_sass?: SymfonycastsSassConfig,
  *     },
  *     "when@test"?: array{
  *         imports?: ImportsConfig,
@@ -1567,6 +1588,7 @@ namespace Symfony\Component\DependencyInjection\Loader\Configurator;
  *         twig_extra?: TwigExtraConfig,
  *         security?: SecurityConfig,
  *         monolog?: MonologConfig,
+ *         symfonycasts_sass?: SymfonycastsSassConfig,
  *     },
  *     ...<string, ExtensionType|array{ // extra keys must follow the when@%env% pattern or match an extension alias
  *         imports?: ImportsConfig,
