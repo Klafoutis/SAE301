@@ -1,3 +1,80 @@
-body {
-    background-color: skyblue;
+/* Général */
+
+html, body {
+    margin: 0;
+    padding: 0;
+    overflow-x: hidden;
+}
+
+header {
+    height: 15vh;
+    font-size: larger;
+    display: flex;
+    align-items: center;
+}
+
+header > div {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 2rem;
+}
+
+header div div {
+    display: flex;
+    width: 40%;
+    font-size: 40px;
+    justify-content: space-between;
+    font-family: karla, sans-serif;
+}
+
+a {
+    text-decoration: none;
+    color: #774D9A;
+}
+
+#logo {
+    height: 10vh;
+}
+
+/* Accueil */
+
+.hero {
+    height: 85vh;
+    background: url('../images/BabyBoomer2.jpg') no-repeat center;
+    background-size: cover;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.hero div {
+    width: 75%;
+    height: 60%;
+    background-color: #f4f4f445;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+#hero {
+    width: 75%;
+}
+
+.hero a {
+    width: 30%;
+    text-align: center;
+    margin-top: 4vh;
+    background-color: #774D9A60;
+    border-radius: 25px;
+}
+
+.hero a p {
+    color: white;
+    font-size: 40px;
+}
+
+.acc2 {
 }
