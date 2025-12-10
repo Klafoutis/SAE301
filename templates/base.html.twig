@@ -11,7 +11,30 @@
             {% block importmap %}{{ importmap('app') }}{% endblock %}
         {% endblock %}
     </head>
+    <header>
+        <nav>
+            <div class="logo">
+                <a href="/"></a>
+            </div>
+            <div>
+                <a href="/">Accueil</a>
+                <a href="#">Reservation</a>
+                <a href="#">Blog</a>
+                <a href="/back">Back-office</a>
+            </div>
+        </nav>
+    </header>
+    {% block style %}
+    <style>
+        header {
+            height: 10vh;
+        }
+    </style>
     <body>
-        {% block body %}{% endblock %}
+        {% block body %}
+        <div>
+            Hello World!
+        </div>
+        {% endblock %}
     </body>
 </html>
