@@ -1,20 +1,29 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Hello AccueilController!{% endblock %}
+{% block title %}Accueil{% endblock %}
 
 {% block body %}
-<style>
-    .example-wrapper { margin: 1em auto; max-width: 800px; width: 95%; font: 18px/1.5 sans-serif; }
-    .example-wrapper code { background: #F5F5F5; padding: 2px 6px; }
-</style>
-
-<div class="example-wrapper">
-    <h1>Hello {{ controller_name }}! ✅</h1>
-
-    This friendly message is coming from:
-    <ul>
-        <li>Your controller at <code>/var/www/sae301/src/Controller/AccueilController.php</code></li>
-        <li>Your template at <code>/var/www/sae301/templates/accueil/index.html.twig</code></li>
-    </ul>
-</div>
+    <section class="hero">
+        <div>
+            <img id="hero" src="{{ asset('images/hero.svg') }}" alt="Image hero">
+        </div>
+        <a href="#" class="hero-button">
+            <p>Réserver ma séance</p>
+        </a>
+    </section>
+    <section class="acc2">
+        <div>
+            <div></div>
+            <div>
+                <h1>Helloo,</h1>
+                <p>”Moi c’est Klara, j’ai 23 ans et je suis passionnée par le nail art depuis 2022. J’ai créé Nail’s Pro pour offrir aux femmes un moment de beauté, de détente et de confiance… directement chez elles.”</p>
+            </div>
+        </div>
+        <div>
+            <p>Si vous habitez Troyes ou les communes voisines (La Chapelle-Saint-Luc, Saint-André-les-Vergers, Pont-Sainte-Marie, Sainte-Savine, Rosières-près-Troyes…), je viens avec plaisir prendre soin de vos mains et sublimer vos ongles selon vos envies.</p>
+        </div>
+    </section>
+    <section class="acc3">
+        <h1>Mes Services</h1>
+    </section>
 {% endblock %}
