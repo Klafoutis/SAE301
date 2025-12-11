@@ -1,4 +1,4 @@
-/* Header / Général */
+/* Header / Général / Footer */
 
 html, body {
     margin: 0;
@@ -36,6 +36,49 @@ header {
 a {
     text-decoration: none;
     color: #774D9A;
+}
+
+footer {
+  height: 50vh;
+  background-color: #B8B7BA;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  align-items: center;
+  justify-content: center;
+
+  > div:nth-child(1) {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    align-items: center;
+
+    > div{
+      font-size: 30px;
+      width: 60%;
+      display: flex;
+      align-items: center;
+      justify-content: space-around;
+    }
+  }
+
+  > div:nth-child(2) {
+
+  }
+
+  > div:nth-child(3) {
+    display: flex;
+    justify-content: center;
+
+    img {
+      width: 60%;
+      margin: auto;
+      display: block;
+    }
+  }
+
+  .contact{
+
+  }
 }
 
 /* Accueil */
@@ -120,11 +163,166 @@ a {
         }
     }
 }
+.acc3 {
+  height: 100vh;
 
-.acc3{
-    height: 100vh;
+  h1 {
+    margin: auto;
+    padding: 5vh;
+    font-size: 40px;
+    width: 90%;
+  }
 
-    div {
+  .carousel-wrapper {
+    position: relative;
+    width: 80%;
+    margin: auto;
+    height: 600px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
 
+  .card-container {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    perspective: 1000px;
+  }
+
+  .card {
+    position: absolute;
+    width: 400px;
+    background: #F4F4F466;
+    text-align: center;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.08);
+    transition: all 0.5s cubic-bezier(0.25, 0.8, 0.25, 1);
+    opacity: 0;
+    padding-bottom: 30px;
+    overflow: hidden;
+
+    &[data-pos="active"] {
+      opacity: 1;
+      z-index: 10;
+      transform: translateX(0) scale(1);
+      filter: blur(0);
     }
+
+    &[data-pos="prev"] {
+      opacity: 1;
+      z-index: 5;
+      transform: translateX(-85%) translateY(-6%) scale(0.80);
+      filter: brightness(0.95);
+    }
+
+    &[data-pos="next"] {
+      opacity: 1;
+      z-index: 5;
+      transform: translateX(85%) translateY(-6%) scale(0.80);
+      filter: brightness(0.95);
+    }
+
+    &[data-pos="hidden"] {
+      opacity: 0;
+      z-index: 0;
+      transform: translateX(0) scale(0.5);
+      pointer-events: none;
+    }
+
+    .card-image-wrapper {
+      width: 90%;
+      margin: auto;
+      aspect-ratio: 1 / 1;
+      overflow: hidden;
+      border-radius: 20px 20px 0 0;
+      margin-bottom: 15px;
+      padding: 15px 15px 0 15px;
+
+      img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        border-radius: 15px;
+        display: block;
+      }
+    }
+
+    .card-content {
+      padding: 0 20px;
+
+      h3 {
+        font-size: 1.6rem;
+        margin: 5px 0 10px 0;
+        font-weight: 500;
+      }
+
+      p {
+        font-size: 30px;
+        line-height: 1.5;
+        margin-bottom: 15px;
+        min-height: 70px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+    }
+
+    .action-btn {
+      background-color: #774D9A55;
+      border: none;
+      padding: 12px 30px;
+      border-radius: 8px;
+      font-size: 1rem;
+      cursor: pointer;
+      font-weight: 500;
+      transition: background 0.3s, transform 0.2s;
+      font-family: "Poppins", sans-serif;
+      width: 50%;
+      height: 6vh;
+
+      &:hover {
+        background-color: #a894bd;
+        transform: translateY(-2px);
+      }
+    }
+  }
+
+  .nav-btn {
+    position: absolute;
+    background-color: black;
+    color: white;
+    border: none;
+    width: 45px;
+    height: 45px;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    z-index: 20;
+    transition: transform 0.2s, background-color 0.3s;
+    top: 50%;
+    transform: translateY(-50%);
+
+    &:hover {
+      transform: translateY(-50%) scale(1.1);
+      background-color: #333;
+    }
+
+    svg {
+      width: 24px;
+      height: 24px;
+    }
+
+    &.prev-btn {
+      left: 10px;
+    }
+
+    &.next-btn {
+      right: 10px;
+    }
+  }
 }
