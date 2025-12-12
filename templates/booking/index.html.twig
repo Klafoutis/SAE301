@@ -161,11 +161,13 @@
 
             <div class="row g-2 align-items-end mb-4">
                 <div class="col-8">
-                    {{ form_row(form.promoCode) }}
+                    {# On ajoute une classe ou un ID pour cibler l'input facilement #}
+                    {{ form_row(form.promoCode, {'attr': {'id': 'js-promo-input'}}) }}
                 </div>
                 <div class="col-4">
-                    <button type="button" class="btn btn-dark w-100 mb-3">Appliquer</button>
+                    <button type="button" class="btn btn-dark w-100 mb-3" id="btn-apply-promo">Appliquer</button>
                 </div>
+                <div id="promo-message" class="col-12 mt-0"></div>
             </div>
 
             <hr>

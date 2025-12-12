@@ -3,8 +3,18 @@
 document.addEventListener('DOMContentLoaded', () => {
     console.log('Système de réservation chargé 💅');
 
+    // --- CONFIGURATION MÉTIER ---
+    const CONFIG = {
+        allowedZips: ['10000', '10120', '10300', '10430', '10600', '10800'], // Ta liste de villes
+        lunchStart: 12.0, // Début pause (12h)
+        lunchEnd: 13.0,   // Fin pause (13h)
+        bufferTrajet: 30, // 30 min de battement après RDV
+    };
+
+    let globalDuration = 0; // Pour stocker la durée arrondie
     // --- VARIABLES GLOBALES ---
     let currentStep = 1;
+    let currentDiscount = 0;
     const totalSteps = 4;
 
     // --- GESTION DU STEPPER (Navigation Corrigée) ---
@@ -62,25 +72,32 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
     function validateStep(step) {
-        // Étape 1 : Au moins un service coché ?
+        // Étape 1 : Services + GÉOGRAPHIE
         if (step === 1) {
-            // CORRECTION : On utilise la classe '.service-checkbox' au lieu du 'name'
+            // A. Services cochés ?
             const checked = document.querySelectorAll('.service-checkbox:checked');
-
-            console.log("Cases cochées :", checked.length); // Pour le debug
-
             if (checked.length === 0) {
-                alert("Veuillez sélectionner au moins une prestation pour continuer.");
-                return false; // Bloque le passage à l'étape suivante
+                alert("Veuillez sélectionner au moins une prestation.");
+                return false;
+            }
+
+            // B. Code Postal valide ? (NOUVEAU)
+            const zipInput = document.getElementById('check_zipcode');
+            if (zipInput) {
+                const zipVal = zipInput.value.trim();
+                // Si le code n'est pas dans la liste CONFIG
+                if (!CONFIG.allowedZips.includes(zipVal)) {
+                    alert("Désolé, votre zone (CP " + zipVal + ") n'est pas encore desservie.");
+                    return false; // On bloque
+                }
             }
         }
+
         // Étape 2 : Date remplie ?
         if (step === 2) {
-            const dateInput = document.getElementById('reservation_dateRdv'); // ID généré par Symfony
-            // Astuce : Si l'ID est différent, essayez document.querySelector('input[type="date"]')
-
+            const dateInput = document.getElementById('reservation_dateRdv') || document.querySelector('input[type="date"]');
             if (dateInput && !dateInput.value) {
-                alert("Veuillez choisir une date dans le calendrier.");
+                alert("Veuillez choisir une date.");
                 return false;
             }
         }
@@ -101,11 +118,8 @@ document.addEventListener('DOMContentLoaded', () => {
         // Somme des services
         servicesInputs.forEach(input => {
             if (input.checked) {
-                // On convertit bien en Float/Int car les attributs data sont des chaînes
-                // Si data-prix n'existe pas, on met 0 par sécurité
                 let prix = parseFloat(input.dataset.prix || 0);
                 let duree = parseInt(input.dataset.duree || 0);
-
                 totalPrix += prix;
                 totalMinutes += duree;
             }
@@ -113,15 +127,25 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // Ajout dépose
         if (deposeInput && deposeInput.checked) {
-            // On s'assure de bien lire les données (sinon 0)
             let prixDepose = parseFloat(deposeInput.dataset.prix || 0);
             let dureeDepose = parseInt(deposeInput.dataset.duree || 0);
-
-            console.log("Dépose ajoutée :", prixDepose, "€", dureeDepose, "min"); // Debug
-
             totalPrix += prixDepose;
             totalMinutes += dureeDepose;
         }
+
+        // --- NOUVEAU : Application de la remise ---
+        if (currentDiscount > 0) {
+            // Calcul de la réduction
+            const montantRemise = (totalPrix * currentDiscount) / 100;
+            totalPrix = totalPrix - montantRemise;
+
+            // Astuce : On arrondit à 2 décimales pour éviter les 45.00000001€
+            totalPrix = Math.round(totalPrix * 100) / 100;
+        }
+
+        // --- NOUVEAU : Arrondi au 15 min supérieur ---
+        // Ex: 65min -> 75min (1h15)
+        globalDuration = Math.ceil(totalMinutes / 15) * 15;
 
         // Affichage (Conversion minutes -> Heures)
         const hours = Math.floor(totalMinutes / 60);
@@ -141,6 +165,15 @@ document.addEventListener('DOMContentLoaded', () => {
 
         if(displayTime) displayTime.textContent = timeString;
         if(displayPrice) displayPrice.textContent = totalPrix + "€";
+        if (currentDiscount > 0) updateFinalSummary();
+
+        // Mettre à jour les créneaux si une date est déjà choisie
+        const dateInput = document.getElementById('reservation_dateRdv');
+        if (dateInput && dateInput.value) {
+            dateInput.dispatchEvent(new Event('change'));
+        }
+
+
     }
 
     // Écouteurs d'événements
@@ -233,61 +266,81 @@ document.addEventListener('DOMContentLoaded', () => {
     const timeSelect = document.getElementById('time_slot');
 
     if (dateInput && timeSelect) {
+
+        // A. Règle : Minimum 24h à l'avance
+        const tomorrow = new Date();
+        tomorrow.setDate(tomorrow.getDate() + 1);
+        const yyyy = tomorrow.getFullYear();
+        const mm = String(tomorrow.getMonth() + 1).padStart(2, '0');
+        const dd = String(tomorrow.getDate()).padStart(2, '0');
+        dateInput.min = `${yyyy}-${mm}-${dd}`;
+
+        // B. Changement de date
         dateInput.addEventListener('change', function() {
             const dateVal = new Date(this.value);
-            const dayOfWeek = dateVal.getDay(); // 0 = Dimanche, 1 = Lundi, etc.
+            const dayOfWeek = dateVal.getDay(); // 0 = Dimanche
 
-            // Réinitialiser le select
-            timeSelect.innerHTML = '';
+            timeSelect.innerHTML = '<option value="">-- Heure --</option>';
             timeSelect.disabled = false;
 
-            // CONFIGURATION DES HORAIRES (Doit correspondre à votre Controller PHP)
-            let startHour = 9;
-            let endHour = 18;
-
-            // Règle 1 : Dimanche Fermé
+            // Règle : Dimanche Fermé
             if (dayOfWeek === 0) {
-                const option = document.createElement('option');
-                option.text = "Fermé le dimanche";
-                timeSelect.add(option);
-                timeSelect.disabled = true; // On bloque
-                return; // On arrête là
+                addOption("Fermé le dimanche", "", true);
+                timeSelect.disabled = true;
+                return;
             }
 
-            // Règle 2 : Samedi (Journée courte)
-            if (dayOfWeek === 6) {
-                endHour = 14;
-            } else if (dayOfWeek === 5) { // Vendredi (Nocturne)
-                endHour = 19;
+            // Horaires d'ouverture/Fermeture
+            let startH = 9;
+            let closeH = 19; // 19h par défaut
+            if (dayOfWeek === 6) closeH = 14; // Samedi 14h
+
+            // Génération des créneaux (boucle par 15 min)
+            for (let h = startH; h < closeH; h++) {
+                checkAndAddSlot(h, 0, closeH);
+                checkAndAddSlot(h, 15, closeH);
+                checkAndAddSlot(h, 30, closeH);
+                checkAndAddSlot(h, 45, closeH);
             }
 
-            // GÉNÉRATION DES CRÉNEAUX (Toutes les 30 min)
-            // On s'arrête un peu avant la fin pour laisser le temps de la prestation
-            // Pour faire simple ici, on génère tout, le backend vérifiera le surbooking.
-
-            const optionDefaut = document.createElement('option');
-            optionDefaut.text = "-- Choisissez un horaire --";
-            optionDefaut.value = "";
-            timeSelect.add(optionDefaut);
-
-            for (let h = startHour; h < endHour; h++) {
-                // Créneau pile (ex: 09:00)
-                addOption(h, '00');
-                // Créneau demi (ex: 09:30)
-                addOption(h, '30');
+            if(timeSelect.options.length <= 1) {
+                addOption("Aucun créneau dispo (trop court)", "", true);
             }
         });
     }
 
-    function addOption(hour, min) {
-        const option = document.createElement('option');
-        // Formatage 9h -> 09h
-        const hStr = hour.toString().padStart(2, '0');
-        const timeStr = `${hStr}:${min}`;
+    // Fonction intelligente qui vérifie si le créneau rentre
+    function checkAndAddSlot(h, m, closingHour) {
+        // 1. Calculs en décimal (ex: 9h30 = 9.5)
+        const start = h + (m / 60);
+        const duration = globalDuration / 60; // Durée prestation
+        const buffer = CONFIG.bufferTrajet / 60; // Trajet
 
-        option.value = timeStr;
-        option.text = timeStr;
-        timeSelect.add(option);
+        const endClient = start + duration; // Quand le client a fini
+        const endReal = endClient + buffer; // Quand l'artisan est libre (après trajet)
+
+        // 2. Vérification Fermeture (Anti-débordement)
+        // Le client doit avoir fini avant la fermeture
+        if (endClient > closingHour) return;
+
+        // 3. Vérification Pause Déjeuner
+        // Si le RDV finit après 12h ET commence avant 13h, ça touche la pause
+        if (endClient > CONFIG.lunchStart && start < CONFIG.lunchEnd) return;
+
+        // Si tout est bon, on affiche
+        addOption(`${format(h)}:${format(m)}`, `${format(h)}:${format(m)}`);
     }
+
+    function format(n) { return n.toString().padStart(2, '0'); }
+
+    function addOption(text, value, disabled = false) {
+        const opt = document.createElement('option');
+        opt.text = text;
+        opt.value = value;
+        opt.disabled = disabled;
+        timeSelect.add(opt);
+    }
+
+
 
 });
