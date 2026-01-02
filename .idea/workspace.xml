@@ -4,18 +4,15 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="9096232e-dee7-4bfb-893a-9e2cdf38bb0e" name="Changes" comment="ff je vais tout recommencer -&gt; code avant que je recommence">
-      <change afterPath="$PROJECT_DIR$/src/Controller/ReservationController.php" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/templates/reservation/new.html.twig" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/templates/reservation/success.html.twig" afterDir="false" />
+    <list default="true" id="9096232e-dee7-4bfb-893a-9e2cdf38bb0e" name="Changes" comment="Ça maaaaarrrrrrrchheeeeeeeeeeeeeee">
+      <change beforePath="$PROJECT_DIR$/.idea/php.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/php.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/assets/logic/reservation.js" beforeDir="false" afterPath="$PROJECT_DIR$/assets/logic/reservation.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Controller/FormController.php" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Entity/Reservation.php" beforeDir="false" afterPath="$PROJECT_DIR$/src/Entity/Reservation.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Form/ReservationType.php" beforeDir="false" afterPath="$PROJECT_DIR$/src/Form/ReservationType.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Repository/ReservationRepository.php" beforeDir="false" afterPath="$PROJECT_DIR$/src/Repository/ReservationRepository.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/templates/booking/index.html.twig" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/templates/booking/success.html.twig" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/composer.json" beforeDir="false" afterPath="$PROJECT_DIR$/composer.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/composer.lock" beforeDir="false" afterPath="$PROJECT_DIR$/composer.lock" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/config/reference.php" beforeDir="false" afterPath="$PROJECT_DIR$/config/reference.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Controller/ReservationController.php" beforeDir="false" afterPath="$PROJECT_DIR$/src/Controller/ReservationController.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/templates/reservation/new.html.twig" beforeDir="false" afterPath="$PROJECT_DIR$/templates/reservation/new.html.twig" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/templates/reservation/success.html.twig" beforeDir="false" afterPath="$PROJECT_DIR$/templates/reservation/success.html.twig" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -308,7 +305,11 @@
       <path value="$PROJECT_DIR$/vendor/fakerphp/faker" />
       <path value="$PROJECT_DIR$/vendor/doctrine/doctrine-fixtures-bundle" />
       <path value="$PROJECT_DIR$/vendor/doctrine/data-fixtures" />
+      <path value="$PROJECT_DIR$/vendor/twig/intl-extra" />
     </include_path>
+  </component>
+  <component name="ProblemsViewState">
+    <option name="selectedTabId" value="CurrentFile" />
   </component>
   <component name="ProjectColorInfo">{
   &quot;associatedIndex&quot;: 1
@@ -363,7 +364,7 @@
       <workItem from="1765525824332" duration="2440000" />
       <workItem from="1765792926361" duration="3774000" />
       <workItem from="1765955713649" duration="3299000" />
-      <workItem from="1767352355058" duration="348000" />
+      <workItem from="1767352355058" duration="7604000" />
     </task>
     <task id="LOCAL-00001" summary="test">
       <option name="closed" value="true" />
@@ -413,7 +414,15 @@
       <option name="project" value="LOCAL" />
       <updated>1765527348383</updated>
     </task>
-    <option name="localTasksCounter" value="7" />
+    <task id="LOCAL-00007" summary="Ça maaaaarrrrrrrchheeeeeeeeeeeeeee">
+      <option name="closed" value="true" />
+      <created>1767352842819</created>
+      <option name="number" value="00007" />
+      <option name="presentableId" value="LOCAL-00007" />
+      <option name="project" value="LOCAL" />
+      <updated>1767352842819</updated>
+    </task>
+    <option name="localTasksCounter" value="8" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -436,7 +445,8 @@
     <MESSAGE value="test de commit" />
     <MESSAGE value="test de commit stp" />
     <MESSAGE value="ff je vais tout recommencer -&gt; code avant que je recommence" />
-    <option name="LAST_COMMIT_MESSAGE" value="ff je vais tout recommencer -&gt; code avant que je recommence" />
+    <MESSAGE value="Ça maaaaarrrrrrrchheeeeeeeeeeeeeee" />
+    <option name="LAST_COMMIT_MESSAGE" value="Ça maaaaarrrrrrrchheeeeeeeeeeeeeee" />
   </component>
   <component name="github-copilot-workspace">
     <instructionFileLocations>

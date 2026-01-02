@@ -18,7 +18,7 @@
 
             <p><strong>Référence :</strong> #{{ reservation.reference }}</p>
 
-            <p><strong>Date :</strong> {{ reservation.dateRdv|date('d/m/Y') }} à <strong>{{ reservation.dateRdv|date('H:i') }}</strong></p>
+            <p><strong>📅 Date :</strong> {{ reservation.dateRdv|format_datetime(locale='fr', pattern='EEEE d MMMM yyyy')|capitalize }}</p><br>
 
             <p><strong>Adresse :</strong><br>
                 {{ reservation.visitAddress }}</p>

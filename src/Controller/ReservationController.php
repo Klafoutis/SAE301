@@ -49,16 +49,16 @@ class ReservationController extends AbstractController
             if ($form->get('hasRemoval')->getData()) {
                 $totalPrice += 10;
                 $totalDuration += 20;
-                $reservation->setComment(($reservation->getComment() ?? '') . " [OPTION DÉPOSE]");
+                $currentComment = $reservation->getComment();
+                $reservation->setComment($currentComment . " [OPTION DÉPOSE INCLUSE]");
             }
-
+            $roundedDuration = (int) (ceil($totalDuration / 15) * 15);
             $reservation->setTotalPrice($totalPrice);
-            $reservation->setTotalDuration($totalDuration);
+            $reservation->setTotalDuration($roundedDuration);
 
             // 3. Adresse
-            $fullAddress = sprintf('%s %s %s',
+            $fullAddress = sprintf('%s à %s',
                 $reservation->getVisitAddress(),
-                $form->get('visitZipcode')->getData(),
                 $form->get('visitCity')->getData()
             );
             $reservation->setVisitAddress($fullAddress);
@@ -74,6 +74,7 @@ class ReservationController extends AbstractController
 
             $entityManager->persist($reservation);
             $entityManager->flush();
+
 
             return $this->redirectToRoute('app_reservation_success', ['id' => $reservation->getId()]);
         }
