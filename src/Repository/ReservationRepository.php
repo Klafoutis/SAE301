@@ -16,28 +16,21 @@ class ReservationRepository extends ServiceEntityRepository
         parent::__construct($registry, Reservation::class);
     }
 
-    //    /**
-    //     * @return Reservation[] Returns an array of Reservation objects
-    //     */
-    //    public function findByExampleField($value): array
-    //    {
-    //        return $this->createQueryBuilder('r')
-    //            ->andWhere('r.exampleField = :val')
-    //            ->setParameter('val', $value)
-    //            ->orderBy('r.id', 'ASC')
-    //            ->setMaxResults(10)
-    //            ->getQuery()
-    //            ->getResult()
-    //        ;
-    //    }
+    public function findConfirmedByDate(\DateTime $date): array
+    {
+        $start = (clone $date)->setTime(0, 0, 0);
+        $end = (clone $date)->setTime(23, 59, 59);
 
-    //    public function findOneBySomeField($value): ?Reservation
-    //    {
-    //        return $this->createQueryBuilder('r')
-    //            ->andWhere('r.exampleField = :val')
-    //            ->setParameter('val', $value)
-    //            ->getQuery()
-    //            ->getOneOrNullResult()
-    //        ;
-    //    }
+        return $this->createQueryBuilder('r')
+            // CORRECTION CRITIQUE : r.date_rdv (et non r.dateRdv)
+            ->andWhere('r.date_rdv BETWEEN :start AND :end')
+            ->andWhere('r.status != :cancelled')
+            ->setParameter('start', $start)
+            ->setParameter('end', $end)
+            ->setParameter('cancelled', 'CANCELED')
+            // CORRECTION CRITIQUE : r.date_rdv
+            ->orderBy('r.date_rdv', 'ASC')
+            ->getQuery()
+            ->getResult();
+    }
 }

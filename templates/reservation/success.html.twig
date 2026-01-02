@@ -1,0 +1,52 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Confirmation de rendez-vous{% endblock %}
+
+{% block body %}
+    <div style="max-width: 600px; margin: 50px auto; text-align: center; font-family: sans-serif;">
+
+        <div style="font-size: 50px; color: #28a745; margin-bottom: 20px;">✓</div>
+
+        <h1>Merci {{ reservation.guestFirstname }} !</h1>
+
+        <p class="lead" style="font-size: 1.2em; color: #555;">
+            Votre rendez-vous est confirmé.
+        </p>
+
+        <div style="background: #f8f9fa; padding: 20px; border-radius: 8px; margin-top: 30px; text-align: left;">
+            <h3 style="border-bottom: 1px solid #ddd; padding-bottom: 10px; margin-bottom: 15px;">Récapitulatif</h3>
+
+            <p><strong>Référence :</strong> #{{ reservation.reference }}</p>
+
+            <p><strong>Date :</strong> {{ reservation.dateRdv|date('d/m/Y') }} à <strong>{{ reservation.dateRdv|date('H:i') }}</strong></p>
+
+            <p><strong>Adresse :</strong><br>
+                {{ reservation.visitAddress }}</p>
+
+            <p><strong>Prestations :</strong></p>
+            <ul>
+                {% for service in reservation.services %}
+                    <li>{{ service.title }}</li>
+                {% endfor %}
+                {% if 'DÉPOSE INCLUSE' in reservation.comment %}
+                    <li>Option Dépose (+20 min)</li>
+                {% endif %}
+            </ul>
+
+            <p style="margin-top: 20px; font-weight: bold;">
+                Total à régler : {{ reservation.totalPrice }} €
+
+                {# CORRECTION ICI : On vérifie le statut au lieu de paymentMethod #}
+                {% if reservation.status == 'CONFIRMED' %}
+                    <span style="color: #28a745; font-weight: normal;">(Payé en ligne)</span>
+                {% else %}
+                    <span style="color: #e0a800; font-weight: normal;">(À régler sur place)</span>
+                {% endif %}
+            </p>
+        </div>
+
+        <div style="margin-top: 30px;">
+            <a href="{{ path('app_reservation_new') }}" style="text-decoration: none; color: #d63384;">Réserver un autre soin</a>
+        </div>
+    </div>
+{% endblock %}

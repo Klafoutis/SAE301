@@ -1,0 +1,497 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Réserver une Manucure{% endblock %}
+
+{% block body %}
+    <div class="reservation-container">
+
+        <div class="progress-bar-container">
+            <div class="progress-steps">
+                <div class="step active" data-step="1">1. Soins</div>
+                <div class="step" data-step="2">2. Créneau</div>
+                <div class="step" data-step="3">3. Infos</div>
+                <div class="step" data-step="4">4. Paiement</div>
+            </div>
+            <div class="progress-line">
+                <div class="progress-fill" id="progressFill" style="width: 25%;"></div>
+            </div>
+        </div>
+
+        {{ form_start(form, {'attr': {'id': 'reservationForm'}}) }}
+
+
+        <div class="form-step active" id="step-1">
+            <h2>Composez votre soin</h2>
+
+            <div class="services-list">
+                {% for group in form.services.vars.choices %}
+                    <fieldset class="category-group">
+                        <legend>{{ group.label }}</legend>
+                        {% for choice in group.choices %}
+                            <div class="service-item">
+                                {% set checkbox_view = form.services[choice.value] %}
+                                <input type="checkbox"
+                                       id="{{ checkbox_view.vars.id }}"
+                                       name="{{ checkbox_view.vars.full_name }}"
+                                       value="{{ choice.value }}"
+                                       class="service-checkbox"
+                                       data-price="{{ choice.attr['data-price'] }}"
+                                       data-duration="{{ choice.attr['data-duration'] }}"
+                                    {{ checkbox_view.vars.checked ? 'checked' : '' }}>
+                                <label for="{{ checkbox_view.vars.id }}">
+                                    <span class="service-name">{{ choice.label }}</span>
+                                    <span class="service-meta">{{ choice.attr['data-duration'] }} min - {{ choice.attr['data-price'] }}€</span>
+                                </label>
+                            </div>
+                        {% endfor %}
+                    </fieldset>
+                {% endfor %}
+            </div>
+
+            {# Empêche Symfony d'afficher les services une 2ème fois à la fin #}
+            {% do form.services.setRendered() %}
+
+            <div class="removal-option">
+                {{ form_widget(form.hasRemoval) }}
+                {{ form_label(form.hasRemoval) }}
+                <small class="form-help">{{ form.hasRemoval.vars.help }}</small>
+            </div>
+
+            <div class="block-total">
+                Total estimé : <span id="live-total-duration">0h00</span> - <span id="live-total-price">0 €</span>
+            </div>
+
+            <div class="zipcode-check-section" style="background: #fff0f5; padding: 15px; border-radius: 8px; margin-bottom: 20px;">
+                <h3>Vérifiez votre éligibilité</h3>
+                {{ form_row(form.visitZipcode) }}
+                <div id="zip-error-msg" style="color: red; display: none; font-weight: bold; margin-top: 5px;">
+                    Désolé, cette zone n'est pas desservie.
+                </div>
+            </div>
+
+            <button type="button" class="btn-next" onclick="nextStep(2)">Voir les disponibilités &rarr;</button>
+        </div>
+
+        <div class="form-step" id="step-2">
+            <h2>Choisissez une date</h2>
+
+            <div class="opening-hours-info">
+                <h4>Nos horaires</h4>
+                <ul>
+                    <li><strong>Lun - Ven :</strong> 09h00 - 19h00</li>
+                    <li><strong>Samedi :</strong> 09h00 - 14h00</li>
+                    <li><strong>Dimanche :</strong> <span style="color:red">Fermé</span></li>
+                </ul>
+                <p class="lunch-break-info"><small>ℹ️ Pause déjeuner de 12h à 13h (aucun RDV possible)</small></p>
+            </div>
+
+            {{ form_row(form.dateRdv) }}
+            <div id="slots-container">
+                {{ form_row(form.timeSlot) }}
+            </div>
+            <div class="btn-group">
+                <button type="button" class="btn-prev" onclick="prevStep(1)">&larr; Retour</button>
+                <button type="button" class="btn-next" onclick="nextStep(3)" disabled id="btn-step-2">Valider le créneau &rarr;</button>
+            </div>
+        </div>
+
+        <div class="form-step" id="step-3">
+            <h2>Vos coordonnées</h2>
+            <div class="row">
+                <div class="col">{{ form_row(form.guestFirstname) }}</div>
+                <div class="col">{{ form_row(form.guestLastname) }}</div>
+            </div>
+            {{ form_row(form.guestEmail) }}
+            {{ form_row(form.guestPhone) }}
+
+            <h3>Lieu du rendez-vous</h3>
+            {{ form_row(form.visitAddress) }}
+            <div class="row">
+                <div class="col">{{ form_row(form.visitCity) }}</div>
+            </div>
+            {{ form_row(form.comment) }}
+
+            <div class="btn-group">
+                <button type="button" class="btn-prev" onclick="prevStep(2)">&larr; Retour</button>
+                <button type="button" class="btn-next" onclick="nextStep(4)">Aller au paiement &rarr;</button>
+            </div>
+        </div>
+
+        <div class="form-step" id="step-4">
+            <h2>Validation</h2>
+
+            <div class="summary-box">
+                <h3>Récapitulatif</h3>
+                <p id="final-summary">...</p>
+            </div>
+
+            {{ form_row(form.paymentMethod) }}
+
+            <div id="credit-card-fields" style="display:none; border:1px solid #ddd; padding:15px; margin-top:10px;">
+                <h4>Carte Bancaire (Simulation)</h4>
+                <input type="text" placeholder="Numéro de carte" class="form-control mb-2">
+                <div class="row">
+                    <div class="col"><input type="text" placeholder="MM/AA" class="form-control"></div>
+                    <div class="col"><input type="text" placeholder="CVC" class="form-control"></div>
+                </div>
+            </div>
+
+            {{ form_row(form.acceptCGU) }}
+
+            <div class="btn-group">
+                <button type="button" class="btn-prev" onclick="prevStep(3)">&larr; Retour</button>
+                <button type="submit" class="btn-submit">CONFIRMER LA RÉSERVATION</button>
+            </div>
+        </div>
+
+        {{ form_end(form) }}
+
+        <div class="sticky-footer" id="stickyFooter">
+            <div class="totals">
+                <span id="total-duration">0h00</span>
+                <span class="separator">•</span>
+                <span id="total-price">0 €</span>
+            </div>
+        </div>
+    </div>
+
+    <style>
+        /* CSS NATIF */
+        .reservation-container { max-width: 600px; margin: 0 auto; padding-bottom: 80px; font-family: sans-serif; }
+
+        /* Wizard Steps */
+        .form-step { display: none; animation: fadeIn 0.3s; }
+        .form-step.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* Progress Bar */
+        .progress-bar-container { margin-bottom: 30px; text-align: center; }
+        .progress-steps { display: flex; justify-content: space-between; margin-bottom: 10px; font-size: 0.9em; color: #888; }
+        .progress-steps .step.active { color: #d63384; font-weight: bold; }
+        .progress-line { height: 4px; background: #eee; border-radius: 2px; overflow: hidden; }
+        .progress-fill { height: 100%; background: #d63384; transition: width 0.3s; }
+
+        /* Services styling */
+        .category-group { border: 1px solid #eee; padding: 10px; margin-bottom: 15px; border-radius: 8px; }
+        .category-group legend { font-weight: bold; padding: 0 5px; color: #d63384; }
+        .service-item { display: flex; align-items: center; margin-bottom: 8px; }
+        .service-item label { flex: 1; display: flex; justify-content: space-between; cursor: pointer; margin-left: 8px; }
+        .service-meta { color: #666; font-size: 0.9em; }
+
+        /* Buttons */
+        .btn-next, .btn-submit { background: #000; color: #fff; padding: 10px 20px; border: none; cursor: pointer; border-radius: 4px; float: right; }
+        .btn-prev { background: #eee; color: #333; padding: 10px 20px; border: none; cursor: pointer; border-radius: 4px; }
+        .btn-group { margin-top: 20px; overflow: hidden; }
+        .btn-next:disabled { background: #ccc; cursor: not-allowed; }
+
+        /* Sticky Footer */
+        .sticky-footer { position: fixed; bottom: 0; left: 0; right: 0; background: #fff; padding: 15px; box-shadow: 0 -2px 10px rgba(0,0,0,0.1); display: flex; justify-content: center; z-index: 100; }
+        .totals { font-size: 1.2em; font-weight: bold; color: #d63384; }
+        .separator { margin: 0 10px; color: #ccc; }
+        .row { display: flex; gap: 10px; } .col { flex: 1; }
+        /* Style de l'encart Horaires */
+        .opening-hours-info {
+            background-color: #f8f9fa; /* Gris très clair */
+            border-left: 5px solid #d63384; /* Bordure rose */
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 5px;
+            font-size: 0.9em;
+            color: #555;
+        }
+
+        .opening-hours-info h4 {
+            margin-top: 0;
+            margin-bottom: 10px;
+            font-size: 1.1em;
+            color: #333;
+            font-weight: bold;
+        }
+
+        .opening-hours-info ul {
+            list-style: none; /* Pas de puces */
+            padding: 0;
+            margin: 0;
+        }
+
+        .opening-hours-info li {
+            margin-bottom: 5px;
+            display: flex;
+            justify-content: space-between; /* Ecarte le jour et l'heure */
+            max-width: 300px; /* Limite la largeur pour la lisibilité */
+            border-bottom: 1px dashed #ddd; /* Petit trait de séparation */
+            padding-bottom: 2px;
+        }
+
+        .lunch-break-info {
+            margin-top: 10px;
+            margin-bottom: 0;
+            font-style: italic;
+            color: #777;
+        }
+    </style>
+
+    <script>
+        const ALLOWED_ZIPCODES = [
+            '10000', '10300', '10120', '10600', '10150', '10430',
+            '10800', '10450', '10420', '10410', '10180', '10320', '10270'
+        ];
+        // ÉTAT GLOBAL DU FORMULAIRE
+        let currentStep = 1;
+        let totalDuration = 0;
+        let totalPrice = 0;
+
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log("DOM chargé. Initialisation du script...");
+            updateTotals(); // Calcul initial au chargement
+
+            // 1. ÉCOUTEUR GLOBAL POUR LE PRIX (Délégation)
+            const form = document.getElementById('reservationForm');
+            if (form) {
+                form.addEventListener('change', function(event) {
+                    const target = event.target;
+
+                    // Si on touche à une checkbox service ou au switch dépose
+                    if (target.classList.contains('service-checkbox') || target.classList.contains('removal-switch')) {
+                        updateTotals();
+                        // Si une date est déjà choisie, on doit recharger les créneaux car la durée a changé
+                        if(document.getElementById('reservation_dateRdv').value) {
+                            fetchAvailableSlots();
+                        }
+                    }
+
+                    // Si on change le moyen de paiement
+                    if (target.name === 'reservation[paymentMethod]') {
+                        const cbBlock = document.getElementById('credit-card-fields');
+                        if(cbBlock) cbBlock.style.display = (target.value === 'online') ? 'block' : 'none';
+                    }
+                });
+            }
+
+            // 2. ÉCOUTEUR SPÉCIFIQUE POUR LA DATE (AJAX)
+            const dateInput = document.getElementById('reservation_dateRdv');
+            if (dateInput) {
+                dateInput.addEventListener('change', fetchAvailableSlots);
+            } else {
+                console.error("Erreur: Champ date #reservation_dateRdv introuvable");
+            }
+        });
+
+        // --- FONCTION 1 : CALCUL DU PRIX ET DURÉE ---
+        function updateTotals() {
+            let price = 0;
+            let duration = 0;
+
+            // Services
+            document.querySelectorAll('.service-checkbox:checked').forEach(cb => {
+                price += parseFloat(cb.getAttribute('data-price')) || 0;
+                duration += parseInt(cb.getAttribute('data-duration')) || 0;
+            });
+
+            // Dépose
+            const removal = document.querySelector('.removal-switch');
+            if (removal && removal.checked) {
+                price += parseFloat(removal.getAttribute('data-price')) || 10;
+                duration += parseInt(removal.getAttribute('data-duration')) || 20;
+            }
+
+            // 3. APPLICATION DE L'ARRONDI AU 1/4 D'HEURE SUPÉRIEUR
+            // Ex: 65 min / 15 = 4.33 -> Plafond(4.33) = 5 -> 5 * 15 = 75 min
+            let finalDuration = 0;
+            if (duration > 0) {
+                finalDuration = Math.ceil(duration / 15) * 15;
+            }
+
+            totalPrice = price;
+            totalDuration = finalDuration;
+            const formattedDuration = formatDuration(finalDuration);
+
+            console.log(`Brut: ${duration}min -> Arrondi: ${finalDuration}min`);
+
+            // Affichage
+            const idsToCheck = ['live-total-price', 'live-total-duration', 'total-price', 'total-duration'];
+            idsToCheck.forEach(id => {
+                const el = document.getElementById(id);
+                if(el) el.textContent = id.includes('price') ? price + ' €' : formattedDuration;
+            });
+
+            // Validation bouton étape 1
+            const btnStep1 = document.querySelector('#step-1 .btn-next');
+            if(btnStep1) btnStep1.disabled = (duration === 0);
+        }
+
+        // --- FONCTION 2 : RÉCUPÉRATION AJAX DES CRÉNEAUX ---
+        function fetchAvailableSlots() {
+            const dateInput = document.getElementById('reservation_dateRdv');
+            const slotSelect = document.getElementById('reservation_timeSlot');
+            const btnStep2 = document.getElementById('btn-step-2');
+
+            const dateVal = dateInput.value;
+
+            // Sécurités
+            if (!dateVal) return;
+            if (totalDuration === 0) {
+                alert("Veuillez d'abord sélectionner au moins un soin.");
+                dateInput.value = ""; // Reset date
+                return;
+            }
+
+            // Feedback visuel
+            slotSelect.innerHTML = '<option>Recherche des créneaux...</option>';
+            slotSelect.disabled = true;
+
+            // Appel AJAX
+            const url = `/booking/available-slots?date=${dateVal}&duration=${totalDuration}`;
+            console.log("Appel AJAX vers : " + url);
+
+            fetch(url)
+                .then(response => {
+                    if (!response.ok) throw new Error("Erreur serveur (404/500)");
+                    return response.json();
+                })
+                .then(data => {
+                    console.log("Données reçues :", data);
+                    slotSelect.innerHTML = ''; // Vider
+
+                    if (data.length === 0) {
+                        slotSelect.innerHTML = '<option value="">Aucun créneau dispo (ou fermé)</option>';
+                    } else {
+                        // Option par défaut
+                        const defaultOpt = document.createElement('option');
+                        defaultOpt.text = "-- Choisir une heure --";
+                        defaultOpt.value = "";
+                        slotSelect.appendChild(defaultOpt);
+
+                        // Remplissage
+                        data.forEach(slot => {
+                            const option = document.createElement('option');
+                            option.value = slot.time;
+                            option.text = slot.label;
+                            slotSelect.appendChild(option);
+                        });
+
+                        slotSelect.disabled = false;
+
+                        // Déblocage du bouton suivant au changement
+                        slotSelect.onchange = function() {
+                            btnStep2.disabled = (this.value === "");
+                        };
+                    }
+                })
+                .catch(error => {
+                    console.error('Erreur AJAX:', error);
+                    slotSelect.innerHTML = '<option>Erreur technique (Voir console)</option>';
+                });
+        }
+
+        function formatDuration(minutes) {
+            const h = Math.floor(minutes / 60);
+            const m = minutes % 60;
+            return (h > 0 ? h + 'h' : '') + (m > 0 ? (m < 10 ? '0'+m : m) : '00');
+        }
+
+        // --- NAVIGATION ---
+        function nextStep(step) {
+            if (step === 2) {
+                // 1. Vérifier qu'un service est choisi
+                if (totalDuration === 0) {
+                    alert("Veuillez choisir au moins une prestation.");
+                    return;
+                }
+
+                // 2. Vérifier le Code Postal (Critique)
+                const zipInput = document.getElementById('reservation_visitZipcode');
+                const errorMsg = document.getElementById('zip-error-msg');
+                const userZip = zipInput.value.trim();
+
+                if (!ALLOWED_ZIPCODES.includes(userZip)) {
+                    // Zone non desservie
+                    zipInput.classList.add('is-invalid'); // Classe Bootstrap rouge
+                    zipInput.style.borderColor = 'red';
+                    errorMsg.style.display = 'block';
+                    errorMsg.textContent = "Nous ne nous déplaçons pas dans la zone " + userZip + " (uniquement Troyes + 20km).";
+                    return; // BLOQUE L'ACCÈS AU CALENDRIER
+                } else {
+                    // Zone OK
+                    zipInput.classList.remove('is-invalid');
+                    zipInput.style.borderColor = '#ccc';
+                    errorMsg.style.display = 'none';
+                }
+            }
+            // Validation étape 2
+            if (step === 3) {
+                const slotSelect = document.getElementById('reservation_timeSlot');
+                const dateInput = document.getElementById('reservation_dateRdv');
+
+                if(!dateInput.value) {
+                    alert("Veuillez choisir une date.");
+                    return;
+                }
+                if(!slotSelect.value) {
+                    alert("Veuillez choisir une heure de rendez-vous.");
+                    return;
+                }
+            }
+            // --- VALIDATION ÉTAPE 3 vers 4 (Coordonnées) ---
+            if (step === 4) {
+                const step3Div = document.getElementById('step-3');
+                // On sélectionne tous les champs requis visibles dans l'étape 3
+                const inputs = step3Div.querySelectorAll('input[required], select[required], textarea[required]');
+
+                let allValid = true;
+
+                for (const input of inputs) {
+                    // checkValidity() vérifie si le champ respecte le required, le pattern, etc.
+                    if (!input.checkValidity()) {
+                        allValid = false;
+                        // reportValidity() affiche la petite bulle d'erreur native du navigateur ("Veuillez remplir ce champ")
+                        input.reportValidity();
+                        break; // On s'arrête à la première erreur pour ne pas agresser l'utilisateur
+                    }
+                }
+
+                if (!allValid) {
+                    return; // On bloque le passage à l'étape suivante
+                }
+            }
+            showStep(step);
+        }
+
+        function prevStep(step) { showStep(step); }
+
+        function showStep(step) {
+            document.querySelectorAll('.form-step').forEach(el => el.classList.remove('active'));
+            document.getElementById('step-' + step).classList.add('active');
+            document.querySelectorAll('.progress-steps .step').forEach(el => {
+                el.classList.toggle('active', parseInt(el.dataset.step) <= step);
+            });
+            const fill = document.getElementById('progressFill');
+            if(fill) fill.style.width = ((step-1) * 33) + '%';
+            if (step === 4) updateFinalSummary();
+            currentStep = step;
+        }
+
+        function updateFinalSummary() {
+            const dateInput = document.getElementById('reservation_dateRdv');
+            const slotSelect = document.getElementById('reservation_timeSlot');
+
+            // Sécurisation des valeurs
+            const dateTxt = dateInput ? dateInput.value : '...';
+            let timeTxt = '...';
+            if (slotSelect && slotSelect.selectedIndex >= 0) {
+                timeTxt = slotSelect.options[slotSelect.selectedIndex].text;
+            }
+
+            const address = document.getElementById('reservation_visitAddress').value;
+            const city = document.getElementById('reservation_visitCity').value;
+
+            const summaryHTML = `
+            <p><strong>Soins :</strong> ${totalPrice}€ (${formatDuration(totalDuration)})</p>
+            <p><strong>Quand :</strong> Le ${dateTxt} à ${timeTxt}</p>
+            <p><strong>Où :</strong> ${address}, ${city}</p>
+        `;
+            const summaryEl = document.getElementById('final-summary');
+            if(summaryEl) summaryEl.innerHTML = summaryHTML;
+        }
+    </script>
+{% endblock %}
