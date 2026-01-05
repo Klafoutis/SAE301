@@ -164,7 +164,7 @@
         }
 
         /* --- ÉTAPE 2 & 3 : INPUTS & CALENDRIER --- */
-        .form-control, .zipcode-input, select {
+        .form-control, select {
             padding: 12px;
             border: 1px solid #ced4da;
             border-radius: 8px;
@@ -173,7 +173,7 @@
             transition: border-color 0.2s;
         }
 
-        .zipcode-input, .form-control {
+        .form-control {
             width: 95%;
         }
 
@@ -181,7 +181,7 @@
             width: 99%;
         }
 
-        .form-control:focus, .zipcode-input:focus, select:focus {
+        .form-control:focus, select:focus {
             border-color: var(--primary-color);
             outline: none;
             box-shadow: 0 0 0 3px rgba(214, 51, 132, 0.1);
@@ -405,7 +405,6 @@
         .sticky-footer { position: fixed; bottom: 0; left: 0; right: 0; background: #fff; padding: 15px; box-shadow: 0 -2px 10px rgba(0,0,0,0.1); display: flex; justify-content: center; z-index: 100; }
         .totals { font-size: 1.2em; font-weight: bold; color: var(--primary-color); }
         .separator { margin: 0 10px; color: #ccc; }
-        .row { display: flex; gap: 10px; } .col { flex: 1; }
         /* Style de l'encart Horaires */
         .opening-hours-info {
             background-color: #f8f9fa; /* Gris très clair */
@@ -475,13 +474,6 @@
 
         #final-summary strong {
             color: #333;
-        }
-
-        /* Choix du Paiement (Design Cartes) */
-        #reservation_paymentMethod {
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
         }
 
         /* On cache les boutons radio natifs de Symfony */
