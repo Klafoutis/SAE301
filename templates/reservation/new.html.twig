@@ -3,8 +3,8 @@
     {{ parent() }}
     <style>
         :root {
-            --primary-color: #d63384; /* Rose framboise pour les actions */
-            --primary-light: #fff0f5; /* Rose très pâle pour les fonds */
+            --primary-color: #774D9A; /* Rose framboise pour les actions */
+            --primary-light: #f2edfa; /* Rose très pâle pour les fonds */
             --text-color: #333;
             --border-radius: 12px;
             --transition-speed: 0.3s;
@@ -34,7 +34,7 @@
             margin-top: 20px;
             border-bottom: 2px solid var(--primary-light);
             display: block;
-            width: 100%;
+            width: 98%;
             padding-bottom: 5px;
         }
 
@@ -83,14 +83,84 @@
         .service-meta { font-size: 0.9rem; color: #666; }
 
         /* OPTION DÉPOSE (Switch ou Checkbox simple) */
+        /* --- OPTION DÉPOSE (STYLE SWITCH & CARD) --- */
         .removal-option {
-            margin: 20px 0;
-            padding: 15px;
-            background: #f8f9fa;
-            border-radius: 8px;
             display: flex;
-            align-items: center;
-            gap: 10px;
+            align-items: center; /* Aligne verticalement le switch et le texte */
+            background: #fff;
+            border: 1px solid #dee2e6;
+            border-radius: 12px;
+            padding: 15px 20px;
+            margin: 20px 0;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.02); /* Ombre légère */
+            cursor: pointer;
+            position: relative; /* Pour le clic sur toute la zone */
+        }
+
+        /* 1. Transformation de la Checkbox en "SWITCH" */
+        .removal-option input[type="checkbox"] {
+            appearance: none; /* Supprime le style par défaut du navigateur */
+            -webkit-appearance: none;
+            width: 50px;       /* Largeur du switch */
+            height: 28px;      /* Hauteur du switch */
+            background: #e9ecef; /* Gris éteint */
+            border-radius: 50px; /* Bords ronds */
+            position: relative;
+            cursor: pointer;
+            outline: none;
+            transition: background 0.3s;
+            margin-right: 15px; /* Espace entre le switch et le texte */
+            flex-shrink: 0; /* Empêche le switch de s'écraser sur mobile */
+        }
+
+        /* Le rond blanc à l'intérieur du switch */
+        .removal-option input[type="checkbox"]::after {
+            content: '';
+            position: absolute;
+            top: 3px;
+            left: 3px;
+            width: 22px;
+            height: 22px;
+            background: white;
+            border-radius: 50%;
+            transition: transform 0.3s cubic-bezier(0.4, 0.0, 0.2, 1);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+
+        /* Quand c'est COCHÉ : Le fond devient Rose */
+        .removal-option input[type="checkbox"]:checked {
+            background: var(--primary-color);
+        }
+
+        /* Quand c'est COCHÉ : Le rond bouge à droite */
+        .removal-option input[type="checkbox"]:checked::after {
+            transform: translateX(22px);
+        }
+
+        .text-wrapper {
+            display: flex;
+            flex-direction: column; /* Force l'affichage l'un sous l'autre */
+            justify-content: center;
+        }
+
+        /* Le Label (Titre) */
+        .text-wrapper label {
+            margin: 0;
+            font-size: 1rem;
+            font-weight: 600;
+            color: #333;
+            cursor: pointer;
+            line-height: 1.2;
+        }
+
+        /* Le texte d'aide (Sous-titre rose) */
+        .text-wrapper .form-help {
+            margin-top: 4px;      /* Un petit espace sous le titre */
+            font-size: 0.85rem;   /* Texte plus petit */
+            color: var(--primary-color); /* Couleur Rose */
+            font-weight: 500;
+            display: block;
         }
 
         /* --- ÉTAPE 2 & 3 : INPUTS & CALENDRIER --- */
@@ -155,7 +225,7 @@
         }
 
         .btn-next:hover {
-            background-color: #b02a6c;
+            background-color: var(--primary-color);
             transform: translateY(-1px);
         }
 
@@ -268,8 +338,8 @@
         .contact-form-wrapper input:focus,
         .contact-form-wrapper textarea:focus {
             background-color: #ffffff; /* Le fond devient blanc pur */
-            border-color: #d63384; /* Bordure Rose */
-            box-shadow: 0 4px 12px rgba(214, 51, 132, 0.15); /* Belle ombre rose douce */
+            border-color: var(--primary-color); /* Bordure Rose */
+            box-shadow: 0 4px 12px rgba(139,23,210, 0.15); /* Belle ombre rose douce */
             outline: none;
             transform: translateY(-1px); /* Léger effet de soulèvement */
         }
@@ -292,7 +362,7 @@
             border-left: 4px solid #e9ecef; /* Petite barre décorative à gauche */
         }
         .comment-block textarea:focus {
-            border-left-color: #d63384;
+            border-left-color: var(--primary-color);
         }
 
         /* --- RESPONSIVE MOBILE --- */
@@ -314,13 +384,13 @@
         /* Progress Bar */
         .progress-bar-container { margin-bottom: 30px; text-align: center; }
         .progress-steps { display: flex; justify-content: space-between; margin-bottom: 10px; font-size: 0.9em; color: #888; }
-        .progress-steps .step.active { color: #d63384; font-weight: bold; }
+        .progress-steps .step.active { color: var(--primary-color); font-weight: bold; }
         .progress-line { height: 4px; background: #eee; border-radius: 2px; overflow: hidden; }
-        .progress-fill { height: 100%; background: #d63384; transition: width 0.3s; }
+        .progress-fill { height: 100%; background: var(--primary-color); transition: width 0.3s; }
 
         /* Services styling */
         .category-group { border: 1px solid #eee; padding: 10px; margin-bottom: 15px; border-radius: 8px; }
-        .category-group legend { font-weight: bold; padding: 0 5px; color: #d63384; }
+        .category-group legend { font-weight: bold; padding: 0 5px; color: var(--primary-color); }
         .service-item { display: flex; align-items: center; margin-bottom: 8px; }
         .service-item label { flex: 1; display: flex; justify-content: space-between; cursor: pointer; margin-left: 8px; }
         .service-meta { color: #666; font-size: 0.9em; }
@@ -333,13 +403,13 @@
 
         /* Sticky Footer */
         .sticky-footer { position: fixed; bottom: 0; left: 0; right: 0; background: #fff; padding: 15px; box-shadow: 0 -2px 10px rgba(0,0,0,0.1); display: flex; justify-content: center; z-index: 100; }
-        .totals { font-size: 1.2em; font-weight: bold; color: #d63384; }
+        .totals { font-size: 1.2em; font-weight: bold; color: var(--primary-color); }
         .separator { margin: 0 10px; color: #ccc; }
         .row { display: flex; gap: 10px; } .col { flex: 1; }
         /* Style de l'encart Horaires */
         .opening-hours-info {
             background-color: #f8f9fa; /* Gris très clair */
-            border-left: 5px solid #d63384; /* Bordure rose */
+            border-left: 5px solid var(--primary-color); /* Bordure rose */
             padding: 15px;
             margin-bottom: 20px;
             border-radius: 5px;
@@ -461,15 +531,56 @@
             box-shadow: inset 0 0 0 3px #fff; /* Crée l'effet de point blanc au centre */
         }
 
-        /* Zone Carte Bancaire (si affichée) */
+        /* --- STYLE CARTE BANCAIRE (LAYOUT 2 LIGNES) --- */
+
         #credit-card-fields {
             background: #f8f9fa;
             padding: 20px;
-            border-radius: 8px;
+            border-radius: 12px;
             margin-top: 15px;
             border: 1px solid #e9ecef;
             animation: fadeIn 0.3s;
         }
+
+        /* Espacement entre les lignes */
+        .cc-row {
+            margin-bottom: 15px;
+        }
+
+        /* Conteneur pour la ligne du bas (Date + CVC) */
+        .cc-row-split {
+            display: flex;
+            gap: 15px; /* Espace entre Date et CVC */
+        }
+
+        /* Chaque colonne prend 50% de la place */
+        .cc-col {
+            flex: 1;
+        }
+
+        .cc-col input {
+            width: 90%; /* Remplit toute la colonne */
+        }
+
+
+        /* --- PETITS DÉTAILS VISUELS (ICÔNES) --- */
+        .input-icon-wrapper {
+            position: relative;
+            width: 100%;
+            height: 45px;
+        }
+
+        /* Icône de carte à droite du champ */
+        .card-icon, .cvc-icon {
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%); /* Centrage vertical parfait */
+            font-size: 1.2rem;
+            pointer-events: none; /* Pour pouvoir cliquer au travers */
+            opacity: 0.5;
+        }
+
 
         /* --- STYLE CASE À COCHER (CGU) --- */
         .terms-checkbox-container {
@@ -570,9 +681,10 @@
             {% do form.services.setRendered() %}
 
             <div class="removal-option">
-                {{ form_widget(form.hasRemoval) }}
-                {{ form_label(form.hasRemoval) }}
-                <p class="form-help">{{ form.hasRemoval.vars.help }}</p>
+                {{ form_widget(form.hasRemoval) }} <div class="text-wrapper">
+                    {{ form_label(form.hasRemoval) }}
+                    <span class="form-help">{{ form.hasRemoval.vars.help }}</span>
+                </div>
             </div>
 
             <div class="block-total">
@@ -655,13 +767,30 @@
 
             {{ form_row(form.paymentMethod) }}
 
-            <div id="credit-card-fields" style="display:none; border:1px solid #ddd; padding:15px; margin-top:10px;">
-                <h4>Carte Bancaire (Simulation)</h4>
-                <input type="text" placeholder="Numéro de carte" class="form-control mb-2">
-                <div class="row">
-                    <div class="col"><input type="text" placeholder="MM/AA" class="form-control"></div>
-                    <div class="col"><input type="text" placeholder="CVC" class="form-control"></div>
+            <div id="credit-card-fields" style="display: none;">
+
+                <div class="cc-row">
+                    <label for="cc-number">Numéro de carte</label>
+                    <div class="input-icon-wrapper">
+                        <input type="text" id="cc-number" class="form-control" placeholder="0000 0000 0000 0000" maxlength="19">
+                        <span class="card-icon">💳</span>
+                    </div>
                 </div>
+
+                <div class="cc-row-split">
+                    <div class="cc-col">
+                        <label for="cc-expiry">Expiration</label>
+                        <input type="text" id="cc-expiry" class="form-control" placeholder="MM / AA" maxlength="7">
+                    </div>
+                    <div class="cc-col">
+                        <label for="cc-cvc">CVC</label>
+                        <div class="input-icon-wrapper">
+                            <input type="text" id="cc-cvc" class="form-control" placeholder="123" maxlength="3">
+                            <span class="cvc-icon">🔒</span>
+                        </div>
+                    </div>
+                </div>
+
             </div><br>
 
             <div class="terms-checkbox-container">
@@ -982,5 +1111,55 @@
             const summaryEl = document.getElementById('final-summary');
             if(summaryEl) summaryEl.innerHTML = summaryHTML;
         }
+        document.addEventListener('DOMContentLoaded', function() {
+
+            // --- 1. FORMATAGE NUMÉRO DE CARTE (Espacement par 4) ---
+            const ccNumberInput = document.getElementById('cc-number');
+            if (ccNumberInput) {
+                ccNumberInput.addEventListener('input', function (e) {
+                    // A. On retire tout ce qui n'est pas un chiffre
+                    let value = e.target.value.replace(/\D/g, '');
+
+                    // B. On ajoute un espace tous les 4 chiffres
+                    // La regex (.{4}) capture des groupes de 4 caractères
+                    let formattedValue = value.match(/.{1,4}/g)?.join(' ') || '';
+
+                    // C. On remet la valeur formatée dans le champ
+                    e.target.value = formattedValue;
+                });
+            }
+
+            // --- 2. FORMATAGE DATE (Ajout du Slash) ---
+            const ccExpiryInput = document.getElementById('cc-expiry');
+            if (ccExpiryInput) {
+                ccExpiryInput.addEventListener('input', function (e) {
+                    // A. On retire tout ce qui n'est pas un chiffre
+                    let value = e.target.value.replace(/\D/g, '');
+
+                    // B. Si on a plus de 2 chiffres (le mois), on ajoute le slash
+                    if (value.length > 2) {
+                        value = value.substring(0, 2) + ' / ' + value.substring(2, 4);
+                    }
+
+                    // C. Mise à jour du champ
+                    e.target.value = value;
+                });
+
+                // Petit bonus : gestion de la touche "Effacer" pour ne pas bloquer sur le slash
+                ccExpiryInput.addEventListener('keydown', function(e) {
+                    if (e.key === "Backspace" && this.value.endsWith(' / ')) {
+                        this.value = this.value.slice(0, -3); // On efface le slash d'un coup
+                    }
+                });
+            }
+
+            // --- 3. FORMATAGE CVC (Chiffres uniquement) ---
+            const ccCvcInput = document.getElementById('cc-cvc');
+            if(ccCvcInput) {
+                ccCvcInput.addEventListener('input', function(e) {
+                    e.target.value = e.target.value.replace(/\D/g, ''); // Que des chiffres
+                });
+            }
+        });
     </script>
 {% endblock %}

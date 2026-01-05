@@ -5,12 +5,7 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="9096232e-dee7-4bfb-893a-9e2cdf38bb0e" name="Changes" comment="Ça maaaaarrrrrrrchheeeeeeeeeeeeeee">
-      <change beforePath="$PROJECT_DIR$/.idea/php.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/php.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/composer.json" beforeDir="false" afterPath="$PROJECT_DIR$/composer.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/composer.lock" beforeDir="false" afterPath="$PROJECT_DIR$/composer.lock" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/config/reference.php" beforeDir="false" afterPath="$PROJECT_DIR$/config/reference.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Controller/ReservationController.php" beforeDir="false" afterPath="$PROJECT_DIR$/src/Controller/ReservationController.php" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/templates/reservation/new.html.twig" beforeDir="false" afterPath="$PROJECT_DIR$/templates/reservation/new.html.twig" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/templates/reservation/success.html.twig" beforeDir="false" afterPath="$PROJECT_DIR$/templates/reservation/success.html.twig" afterDir="false" />
     </list>
@@ -365,6 +360,7 @@
       <workItem from="1765792926361" duration="3774000" />
       <workItem from="1765955713649" duration="3299000" />
       <workItem from="1767352355058" duration="7604000" />
+      <workItem from="1767602916787" duration="3765000" />
     </task>
     <task id="LOCAL-00001" summary="test">
       <option name="closed" value="true" />

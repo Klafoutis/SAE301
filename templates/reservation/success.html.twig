@@ -16,9 +16,9 @@
         <div style="background: #f8f9fa; padding: 20px; border-radius: 8px; margin-top: 30px; text-align: left;">
             <h3 style="border-bottom: 1px solid #ddd; padding-bottom: 10px; margin-bottom: 15px;">Récapitulatif</h3>
 
-            <p><strong>Référence :</strong> #{{ reservation.reference }}</p>
+            <p><strong>Référence :</strong> #{{ reservation.reference }}</p><br>
 
-            <p><strong>📅 Date :</strong> {{ reservation.dateRdv|format_datetime(locale='fr', pattern='EEEE d MMMM yyyy')|capitalize }}</p><br>
+            <p><strong>📅 Date :</strong> {{ reservation.dateRdv|format_datetime(locale='fr', pattern='EEEE d MMMM yyyy')|capitalize }}</p>
 
             <p><strong>Adresse :</strong><br>
                 {{ reservation.visitAddress }}</p>
@@ -31,7 +31,7 @@
                 {% if 'DÉPOSE INCLUSE' in reservation.comment %}
                     <li>Option Dépose (+20 min)</li>
                 {% endif %}
-            </ul>
+            </ul><br>
 
             <p style="margin-top: 20px; font-weight: bold;">
                 Total à régler : {{ reservation.totalPrice }} €
@@ -40,7 +40,7 @@
                 {% if reservation.status == 'CONFIRMED' %}
                     <span style="color: #28a745; font-weight: normal;">(Payé en ligne)</span>
                 {% else %}
-                    <span style="color: #e0a800; font-weight: normal;">(À régler sur place)</span>
+                    <span style="color: #b60404; font-weight: normal;"> (À régler sur place)</span>
                 {% endif %}
             </p>
         </div>
