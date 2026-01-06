@@ -1,0 +1,1165 @@
+{% extends 'base.html.twig' %}
+{% block stylesheets %}
+    {{ parent() }}
+    <style>
+        :root {
+            --primary-color: #774D9A; /* Rose framboise pour les actions */
+            --primary-light: #f2edfa; /* Rose très pâle pour les fonds */
+            --text-color: #333;
+            --border-radius: 12px;
+            --transition-speed: 0.3s;
+        }
+    /* CONTENEUR PRINCIPAL */
+    .reservation-container {
+    max-width: 600px;
+    margin: 40px auto;
+    background: white;
+    padding: 30px;
+    border-radius: var(--border-radius);
+    box-shadow: 0 10px 25px rgba(0,0,0,0.05); /* Ombre douce */
+    }
+
+    h2 {
+    color: var(--text-color);
+    font-weight: 700;
+    margin-bottom: 25px;
+    text-align: center;
+    }
+        /* --- ÉTAPE 1: LISTE DES SERVICES (CARDS) --- */
+        .category-group legend {
+            font-size: 1.1em;
+            font-weight: bold;
+            color: #555;
+            margin-bottom: 10px;
+            margin-top: 20px;
+            border-bottom: 2px solid var(--primary-light);
+            display: block;
+            width: 98%;
+            padding-bottom: 5px;
+        }
+
+        /* On cache la checkbox moche par défaut */
+        .service-checkbox {
+            display: none;
+        }
+
+        /* Le label devient une "carte" cliquable */
+        .service-item label {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px;
+            margin-bottom: 10px;
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            background: white;
+        }
+
+        .service-item label:hover {
+            border-color: var(--primary-color);
+            background-color: #fffdfd;
+        }
+
+        /* Quand la checkbox est cochée (grâce au sélecteur + ou ~) */
+        .service-checkbox:checked + label {
+            border-color: var(--primary-color);
+            background-color: var(--primary-light);
+            font-weight: 500;
+            box-shadow: 0 2px 8px rgba(214, 51, 132, 0.15);
+        }
+
+        /* Checkmark visuel */
+        .service-checkbox:checked + label::before {
+            content: '✓';
+            display: inline-block;
+            margin-right: 10px;
+            color: var(--primary-color);
+            font-weight: bold;
+        }
+
+        .service-name { font-size: 1rem; }
+        .service-meta { font-size: 0.9rem; color: #666; }
+
+        /* OPTION DÉPOSE (Switch ou Checkbox simple) */
+        /* --- OPTION DÉPOSE (STYLE SWITCH & CARD) --- */
+        .removal-option {
+            display: flex;
+            align-items: center; /* Aligne verticalement le switch et le texte */
+            background: #fff;
+            border: 1px solid #dee2e6;
+            border-radius: 12px;
+            padding: 15px 20px;
+            margin: 20px 0;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.02); /* Ombre légère */
+            cursor: pointer;
+            position: relative; /* Pour le clic sur toute la zone */
+        }
+
+        /* 1. Transformation de la Checkbox en "SWITCH" */
+        .removal-option input[type="checkbox"] {
+            appearance: none; /* Supprime le style par défaut du navigateur */
+            -webkit-appearance: none;
+            width: 50px;       /* Largeur du switch */
+            height: 28px;      /* Hauteur du switch */
+            background: #e9ecef; /* Gris éteint */
+            border-radius: 50px; /* Bords ronds */
+            position: relative;
+            cursor: pointer;
+            outline: none;
+            transition: background 0.3s;
+            margin-right: 15px; /* Espace entre le switch et le texte */
+            flex-shrink: 0; /* Empêche le switch de s'écraser sur mobile */
+        }
+
+        /* Le rond blanc à l'intérieur du switch */
+        .removal-option input[type="checkbox"]::after {
+            content: '';
+            position: absolute;
+            top: 3px;
+            left: 3px;
+            width: 22px;
+            height: 22px;
+            background: white;
+            border-radius: 50%;
+            transition: transform 0.3s cubic-bezier(0.4, 0.0, 0.2, 1);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+
+        /* Quand c'est COCHÉ : Le fond devient Rose */
+        .removal-option input[type="checkbox"]:checked {
+            background: var(--primary-color);
+        }
+
+        /* Quand c'est COCHÉ : Le rond bouge à droite */
+        .removal-option input[type="checkbox"]:checked::after {
+            transform: translateX(22px);
+        }
+
+        .text-wrapper {
+            display: flex;
+            flex-direction: column; /* Force l'affichage l'un sous l'autre */
+            justify-content: center;
+        }
+
+        /* Le Label (Titre) */
+        .text-wrapper label {
+            margin: 0;
+            font-size: 1rem;
+            font-weight: 600;
+            color: #333;
+            cursor: pointer;
+            line-height: 1.2;
+        }
+
+        /* Le texte d'aide (Sous-titre rose) */
+        .text-wrapper .form-help {
+            margin-top: 4px;      /* Un petit espace sous le titre */
+            font-size: 0.85rem;   /* Texte plus petit */
+            color: var(--primary-color); /* Couleur Rose */
+            font-weight: 500;
+            display: block;
+        }
+
+        /* --- ÉTAPE 2 & 3 : INPUTS & CALENDRIER --- */
+        .form-control, .zipcode-input, select {
+            padding: 12px;
+            border: 1px solid #ced4da;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            font-size: 16px; /* Évite le zoom sur iPhone */
+            transition: border-color 0.2s;
+        }
+
+        .zipcode-input, .form-control {
+            width: 95%;
+        }
+
+        select {
+            width: 99%;
+        }
+
+        .form-control:focus, .zipcode-input:focus, select:focus {
+            border-color: var(--primary-color);
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(214, 51, 132, 0.1);
+        }
+
+
+        label {
+            display: block;
+            margin-bottom: 6px;
+            font-weight: 500;
+            color: #495057;
+        }
+
+        /* --- BLOC TOTAL FLOTTANT OU FIXE --- */
+        .block-total {
+            background: var(--primary-color); /* Gris foncé chic */
+            color: white;
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+            font-size: 1.1em;
+            margin: 20px 0;
+            font-weight: bold;
+        }
+
+        /* --- BOUTONS NAVIGATION --- */
+        .btn-next, .btn-prev {
+            padding: 12px 25px;
+            border: none;
+            border-radius: 50px; /* Boutons arrondis */
+            font-size: 1rem;
+            cursor: pointer;
+            transition: transform 0.1s, opacity 0.2s;
+            font-weight: 600;
+        }
+
+        .btn-next {
+            background-color: var(--primary-color);
+            color: white;
+            float: right; /* Aligner à droite */
+        }
+
+        .btn-next:hover {
+            background-color: var(--primary-color);
+            transform: translateY(-1px);
+        }
+
+        .btn-next:disabled {
+            background-color: #ccc;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .btn-prev {
+            background-color: transparent;
+            color: #6c757d;
+            border: 1px solid #ced4da;
+        }
+
+        .btn-prev:hover {
+            background-color: #f1f3f5;
+            color: #333;
+        }
+
+        /* Container des boutons pour bien les aligner */
+        .btn-group {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 30px;
+            clear: both; /* Pour gérer les floats si besoin */
+        }
+
+        /* --- MESSAGES D'ERREUR --- */
+        .invalid-feedback, #zip-error-msg {
+            color: #dc3545;
+            font-size: 0.875em;
+            margin-top: -10px;
+            margin-bottom: 10px;
+        }
+
+        /* --- STEPS ANIMATION --- */
+        .form-step {
+            display: none;
+            animation: fadeIn 0.4s ease-out;
+        }
+
+        .form-step.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* --- MOBILE RESPONSIVE --- */
+        @media (max-width: 480px) {
+            .reservation-container {
+                padding: 20px;
+                margin: 10px;
+                border-radius: 0; /* Plein écran sur mobile souvent mieux */
+                box-shadow: none;
+            }
+
+            .btn-next, .btn-prev {
+                width: 100%;
+                margin-bottom: 10px;
+                display: block;
+                float: none;
+            }
+
+            .btn-group {
+                flex-direction: column-reverse; /* Suivant en haut, Retour en bas */
+                gap: 10px;
+            }
+        }
+
+        /* --- DESIGN FORMULAIRE CONTACT --- */
+
+        /* Conteneur global de l'étape 3 */
+        .contact-form-wrapper {
+            display: flex;
+            flex-direction: column;
+            gap: 15px; /* Espace vertical entre les champs */
+        }
+
+        /* Grille pour Nom/Prénom côte à côte */
+        .input-group-row {
+            display: flex;
+            gap: 15px;
+        }
+
+        .half-width {
+            flex: 1; /* Chaque champ prend 50% de la place */
+        }
+
+        /* --- STYLE DES INPUTS --- */
+        .contact-form-wrapper input,
+        .contact-form-wrapper textarea,
+        .contact-form-wrapper select {
+            background-color: #f8f9fa; /* Fond gris très clair au repos */
+            border: 1px solid transparent; /* Pas de bordure visible au repos */
+            border-radius: 8px;
+            padding: 14px 16px; /* Plus d'espace interne (confort mobile) */
+            font-size: 1rem;
+            color: #333;
+            transition: all 0.3s ease;
+            width: 100%; /* Important pour que ça remplisse le parent */
+            box-sizing: border-box; /* Évite que le padding casse la largeur */
+            box-shadow: 0 2px 5px rgba(0,0,0,0.02); /* Ombre très subtile */
+        }
+
+        /* QUAND ON CLIQUE DEDANS (FOCUS) */
+        .contact-form-wrapper input:focus,
+        .contact-form-wrapper textarea:focus {
+            background-color: #ffffff; /* Le fond devient blanc pur */
+            border-color: var(--primary-color); /* Bordure Rose */
+            box-shadow: 0 4px 12px rgba(139,23,210, 0.15); /* Belle ombre rose douce */
+            outline: none;
+            transform: translateY(-1px); /* Léger effet de soulèvement */
+        }
+
+        /* --- LABELS (TEXTE AU DESSUS) --- */
+        .contact-form-wrapper label {
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: #6c757d;
+            font-weight: 700;
+            margin-bottom: 6px;
+            margin-left: 4px; /* Léger décalage pour s'aligner avec le texte de l'input */
+        }
+
+        /* --- COMMENTAIRE (TEXTAREA) --- */
+        .comment-block textarea {
+            min-height: 80px;
+            resize: vertical;
+            border-left: 4px solid #e9ecef; /* Petite barre décorative à gauche */
+        }
+        .comment-block textarea:focus {
+            border-left-color: var(--primary-color);
+        }
+
+        /* --- RESPONSIVE MOBILE --- */
+        @media (max-width: 500px) {
+            .input-group-row {
+                flex-direction: column; /* Sur mobile, on remet Nom/Prénom l'un sous l'autre */
+                gap: 0;
+            }
+        }
+
+        /* CSS NATIF */
+        .reservation-container { max-width: 600px; margin: 0 auto; padding-bottom: 80px; font-family: sans-serif; }
+
+        /* Wizard Steps */
+        .form-step { display: none; animation: fadeIn 0.3s; }
+        .form-step.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* Progress Bar */
+        .progress-bar-container { margin-bottom: 30px; text-align: center; }
+        .progress-steps { display: flex; justify-content: space-between; margin-bottom: 10px; font-size: 0.9em; color: #888; }
+        .progress-steps .step.active { color: var(--primary-color); font-weight: bold; }
+        .progress-line { height: 4px; background: #eee; border-radius: 2px; overflow: hidden; }
+        .progress-fill { height: 100%; background: var(--primary-color); transition: width 0.3s; }
+
+        /* Services styling */
+        .category-group { border: 1px solid #eee; padding: 10px; margin-bottom: 15px; border-radius: 8px; }
+        .category-group legend { font-weight: bold; padding: 0 5px; color: var(--primary-color); }
+        .service-item { display: flex; align-items: center; margin-bottom: 8px; }
+        .service-item label { flex: 1; display: flex; justify-content: space-between; cursor: pointer; margin-left: 8px; }
+        .service-meta { color: #666; font-size: 0.9em; }
+
+        /* Buttons */
+        .btn-next, .btn-submit { background: #000; color: #fff; padding: 10px 20px; border: none; cursor: pointer; border-radius: 4px; float: right; }
+        .btn-prev { background: #eee; color: #333; padding: 10px 20px; border: none; cursor: pointer; border-radius: 4px; }
+        .btn-group { margin-top: 20px; overflow: hidden; }
+        .btn-next:disabled { background: #ccc; cursor: not-allowed; }
+
+        /* Sticky Footer */
+        .sticky-footer { position: fixed; bottom: 0; left: 0; right: 0; background: #fff; padding: 15px; box-shadow: 0 -2px 10px rgba(0,0,0,0.1); display: flex; justify-content: center; z-index: 100; }
+        .totals { font-size: 1.2em; font-weight: bold; color: var(--primary-color); }
+        .separator { margin: 0 10px; color: #ccc; }
+        .row { display: flex; gap: 10px; } .col { flex: 1; }
+        /* Style de l'encart Horaires */
+        .opening-hours-info {
+            background-color: #f8f9fa; /* Gris très clair */
+            border-left: 5px solid var(--primary-color); /* Bordure rose */
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 5px;
+            font-size: 0.9em;
+            color: #555;
+        }
+
+        .opening-hours-info h4 {
+            margin-top: 0;
+            margin-bottom: 10px;
+            font-size: 1.1em;
+            color: #333;
+            font-weight: bold;
+        }
+
+        .opening-hours-info ul {
+            list-style: none; /* Pas de puces */
+            padding: 0;
+            margin: 0;
+        }
+
+        .opening-hours-info li {
+            margin-bottom: 5px;
+            display: flex;
+            justify-content: space-between; /* Ecarte le jour et l'heure */
+            max-width: 300px; /* Limite la largeur pour la lisibilité */
+            border-bottom: 1px dashed #ddd; /* Petit trait de séparation */
+            padding-bottom: 2px;
+        }
+
+        .lunch-break-info {
+            margin-top: 10px;
+            margin-bottom: 0;
+            font-style: italic;
+            color: #777;
+        }
+
+        /* Le récapitulatif (Panier Final) */
+        #final-summary {
+            background-color: #fff;
+            border: 1px solid #e9ecef;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 25px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.03);
+        }
+
+        #final-summary p {
+            margin: 8px 0;
+            color: #555;
+            display: flex;
+            justify-content: space-between; /* Aligne gauche/droite */
+            border-bottom: 1px dashed #eee;
+            padding-bottom: 5px;
+        }
+
+        #final-summary p:last-child {
+            border-bottom: none;
+            font-size: 1.1em;
+            color: #000;
+            margin-top: 15px;
+        }
+
+        #final-summary strong {
+            color: #333;
+        }
+
+        /* Choix du Paiement (Design Cartes) */
+        #reservation_paymentMethod {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        /* On cache les boutons radio natifs de Symfony */
+        #reservation_paymentMethod input[type="radio"] {
+            display: none;
+        }
+
+        /* Le label du bouton radio devient une carte */
+        #reservation_paymentMethod label {
+            display: flex;
+            align-items: center;
+            padding: 15px;
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+            background: white;
+            font-weight: 600;
+            color: #444;
+        }
+
+        /* Puce visuelle personnalisée */
+        #reservation_paymentMethod label::before {
+            content: '';
+            display: inline-block;
+            width: 18px;
+            height: 18px;
+            margin-right: 12px;
+            border: 2px solid #ccc;
+            border-radius: 50%;
+            transition: all 0.2s;
+            background: #fff;
+        }
+
+        /* État sélectionné */
+        #reservation_paymentMethod input[type="radio"]:checked + label {
+            border-color: var(--primary-color);
+            background-color: var(--primary-light);
+            color: var(--primary-color);
+            box-shadow: 0 2px 8px rgba(214, 51, 132, 0.15);
+        }
+
+        /* Puce sélectionnée */
+        #reservation_paymentMethod input[type="radio"]:checked + label::before {
+            border-color: var(--primary-color);
+            background-color: var(--primary-color);
+            box-shadow: inset 0 0 0 3px #fff; /* Crée l'effet de point blanc au centre */
+        }
+
+        /* --- STYLE CARTE BANCAIRE (LAYOUT 2 LIGNES) --- */
+
+        #credit-card-fields {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 12px;
+            margin-top: 15px;
+            border: 1px solid #e9ecef;
+            animation: fadeIn 0.3s;
+        }
+
+        /* Espacement entre les lignes */
+        .cc-row {
+            margin-bottom: 15px;
+        }
+
+        /* Conteneur pour la ligne du bas (Date + CVC) */
+        .cc-row-split {
+            display: flex;
+            gap: 15px; /* Espace entre Date et CVC */
+        }
+
+        /* Chaque colonne prend 50% de la place */
+        .cc-col {
+            flex: 1;
+        }
+
+        .cc-col input {
+            width: 90%; /* Remplit toute la colonne */
+        }
+
+
+        /* --- PETITS DÉTAILS VISUELS (ICÔNES) --- */
+        .input-icon-wrapper {
+            position: relative;
+            width: 100%;
+            height: 45px;
+        }
+
+        /* Icône de carte à droite du champ */
+        .card-icon, .cvc-icon {
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%); /* Centrage vertical parfait */
+            font-size: 1.2rem;
+            pointer-events: none; /* Pour pouvoir cliquer au travers */
+            opacity: 0.5;
+        }
+
+
+        /* --- STYLE CASE À COCHER (CGU) --- */
+        .terms-checkbox-container {
+            display: flex;           /* Active l'alignement horizontal */
+            align-items: center;     /* Centre verticalement */
+            gap: 12px;               /* Espace entre la case et le texte */
+            margin-top: 15px;
+            margin-bottom: 5px;
+            padding: 15px;
+            background-color: #fff;  /* Fond blanc propre */
+            border-radius: 8px;
+            border: 1px solid #dee2e6;
+            transition: border-color 0.3s;
+        }
+
+        .terms-checkbox-container:hover {
+            border-color: var(--primary-color); /* Bordure rose au survol */
+        }
+
+        /* Le texte du label */
+        .terms-checkbox-container label {
+            margin-bottom: 0;        /* Enlève la marge par défaut */
+            font-weight: normal;     /* Texte normal (pas gras) */
+            cursor: pointer;         /* Curseur main */
+            font-size: 0.95rem;
+            color: #555;
+            width: auto;             /* Important : ne prend pas toute la largeur */
+        }
+
+        /* Lien rose */
+        .terms-checkbox-container a {
+            color: var(--primary-color);
+            text-decoration: underline;
+        }
+
+        /* La case à cocher elle-même */
+        .terms-checkbox-container input[type="checkbox"] {
+            width: 20px !important;  /* Force une taille plus grande */
+            height: 20px !important; /* Force une taille plus grande */
+            margin: 0;               /* Reset des marges */
+            cursor: pointer;
+            accent-color: var(--primary-color); /* LA COULEUR ROSE ! */
+            background-color: #f8f9fa;
+            border: 1px solid #adb5bd;
+        }
+
+    </style>
+{% endblock %}
+{% block title %}Réserver une Manucure{% endblock %}
+
+{% block body %}
+    <div class="reservation-container">
+
+        <div class="progress-bar-container">
+            <div class="progress-steps">
+                <div class="step active" data-step="1">1. Soins</div>
+                <div class="step" data-step="2">2. Créneau</div>
+                <div class="step" data-step="3">3. Infos</div>
+                <div class="step" data-step="4">4. Paiement</div>
+            </div>
+            <div class="progress-line">
+                <div class="progress-fill" id="progressFill" style="width: 25%;"></div>
+            </div>
+        </div>
+
+        {{ form_start(form, {'attr': {'id': 'reservationForm'}}) }}
+
+
+        <div class="form-step active" id="step-1">
+            <h2>Composez votre soin</h2>
+
+            <div class="services-list">
+                {% for group in form.services.vars.choices %}
+                    <fieldset class="category-group">
+                        <legend>{{ group.label }}</legend>
+                        {% for choice in group.choices %}
+                            <div class="service-item">
+                                {% set checkbox_view = form.services[choice.value] %}
+                                <input type="checkbox"
+                                       id="{{ checkbox_view.vars.id }}"
+                                       name="{{ checkbox_view.vars.full_name }}"
+                                       value="{{ choice.value }}"
+                                       class="service-checkbox"
+                                       data-price="{{ choice.attr['data-price'] }}"
+                                       data-duration="{{ choice.attr['data-duration'] }}"
+                                    {{ checkbox_view.vars.checked ? 'checked' : '' }}>
+                                <label for="{{ checkbox_view.vars.id }}">
+                                    <span class="service-name">{{ choice.label }}</span>
+                                    <span class="service-meta">{{ choice.attr['data-duration'] }} min - {{ choice.attr['data-price'] }}€</span>
+                                </label>
+                            </div>
+                        {% endfor %}
+                    </fieldset>
+                {% endfor %}
+            </div>
+
+            {# Empêche Symfony d'afficher les services une 2ème fois à la fin #}
+            {% do form.services.setRendered() %}
+
+            <div class="removal-option">
+                {{ form_widget(form.hasRemoval) }} <div class="text-wrapper">
+                    {{ form_label(form.hasRemoval) }}
+                    <span class="form-help">{{ form.hasRemoval.vars.help }}</span>
+                </div>
+            </div>
+
+            <div class="block-total">
+                Total estimé : <span id="live-total-duration">0h00</span> - <span id="live-total-price">0 €</span>
+            </div>
+
+            <div class="zipcode-check-section" style="background: #fff0f5; padding: 15px; border-radius: 8px; margin-bottom: 20px;">
+                <h3>Vérifiez votre éligibilité</h3>
+                {{ form_row(form.visitZipcode) }}
+                <div id="zip-error-msg" style="color: red; display: none; font-weight: bold; margin-top: 5px;">
+                    Désolé, cette zone n'est pas desservie.
+                </div>
+            </div>
+
+            <button type="button" class="btn-next" onclick="nextStep(2)">Voir les disponibilités &rarr;</button>
+        </div>
+
+        <div class="form-step" id="step-2">
+            <h2>Choisissez une date</h2>
+
+            <div class="opening-hours-info">
+                <h4>Nos horaires</h4>
+                <ul>
+                    <li><strong>Lun - Ven :</strong> 09h00 - 19h00</li>
+                    <li><strong>Samedi :</strong> 09h00 - 14h00</li>
+                    <li><strong>Dimanche :</strong> <span style="color:red">Fermé</span></li>
+                </ul>
+                <p class="lunch-break-info"><small>ℹ️ Pause déjeuner de 12h à 13h (aucun RDV possible)</small></p>
+            </div>
+
+            {{ form_row(form.dateRdv) }}
+            <div id="slots-container">
+                {{ form_row(form.timeSlot) }}
+            </div>
+            <div class="btn-group">
+                <button type="button" class="btn-prev" onclick="prevStep(1)">&larr; Retour</button>
+                <button type="button" class="btn-next" onclick="nextStep(3)" disabled id="btn-step-2">Valider le créneau &rarr;</button>
+            </div>
+        </div>
+
+        <div class="form-step" id="step-3">
+            <h2>Vos coordonnées</h2>
+
+            <div class="contact-form-wrapper">
+                <div class="input-group-row">
+                    <div class="half-width">
+                        {{ form_row(form.guestFirstname) }}
+                    </div>
+                    <div class="half-width">
+                        {{ form_row(form.guestLastname) }}
+                    </div>
+                </div><br>
+
+                {{ form_row(form.guestEmail) }}<br>
+                {{ form_row(form.guestPhone) }}<br>
+
+                <div class="address-block">
+                    {{ form_row(form.visitAddress) }}<br>
+                    {{ form_row(form.visitCity) }}
+                </div><br>
+
+                <div class="comment-block">
+                    {{ form_row(form.comment) }}
+                </div><br>
+            </div>
+
+            <div class="btn-group">
+                <button type="button" class="btn-prev" onclick="prevStep(2)">&larr; Retour</button>
+                <button type="button" class="btn-next" onclick="nextStep(4)">Aller au paiement &rarr;</button>
+            </div>
+        </div>
+
+        <div class="form-step" id="step-4">
+            <h2>Validation</h2>
+
+            <div class="summary-box">
+                <h3>Récapitulatif</h3>
+                <p id="final-summary">...</p>
+            </div>
+
+            {{ form_row(form.paymentMethod) }}
+
+            <div id="credit-card-fields" style="display: none;">
+
+                <div class="cc-row">
+                    <label for="cc-number">Numéro de carte</label>
+                    <div class="input-icon-wrapper">
+                        <input type="text" id="cc-number" class="form-control" placeholder="0000 0000 0000 0000" maxlength="19">
+                        <span class="card-icon">💳</span>
+                    </div>
+                </div>
+
+                <div class="cc-row-split">
+                    <div class="cc-col">
+                        <label for="cc-expiry">Expiration</label>
+                        <input type="text" id="cc-expiry" class="form-control" placeholder="MM / AA" maxlength="7">
+                    </div>
+                    <div class="cc-col">
+                        <label for="cc-cvc">CVC</label>
+                        <div class="input-icon-wrapper">
+                            <input type="text" id="cc-cvc" class="form-control" placeholder="123" maxlength="3">
+                            <span class="cvc-icon">🔒</span>
+                        </div>
+                    </div>
+                </div>
+
+            </div><br>
+
+            <div class="terms-checkbox-container">
+                {{ form_widget(form.acceptCGU) }}
+                <label for="{{ form.acceptCGU.vars.id }}">
+                    J'accepte les <a href="#" target="_blank">conditions générales de vente</a>
+                </label>
+            </div>
+            <div class="invalid-feedback" style="display: block;">
+                {{ form_errors(form.acceptCGU) }}
+            </div><br>
+
+            <div class="btn-group">
+                <button type="button" class="btn-prev" onclick="prevStep(3)">&larr; Retour</button>
+                <button type="submit" class="btn-submit">CONFIRMER LA RÉSERVATION</button>
+            </div>
+        </div>
+
+        {{ form_end(form) }}
+
+        <div class="sticky-footer" id="stickyFooter">
+            <div class="totals">
+                <span id="total-duration">0h00</span>
+                <span class="separator">•</span>
+                <span id="total-price">0 €</span>
+            </div>
+        </div>
+    </div>
+
+
+    <script>
+        const ALLOWED_ZIPCODES = [
+            '10000', '10300', '10120', '10600', '10150', '10430',
+            '10800', '10450', '10420', '10410', '10180', '10320', '10270'
+        ];
+        // ÉTAT GLOBAL DU FORMULAIRE
+        let currentStep = 1;
+        let totalDuration = 0;
+        let totalPrice = 0;
+
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log("DOM chargé. Initialisation du script...");
+            updateTotals(); // Calcul initial au chargement
+
+            // 1. ÉCOUTEUR GLOBAL POUR LE PRIX (Délégation)
+            const form = document.getElementById('reservationForm');
+            if (form) {
+                form.addEventListener('change', function(event) {
+                    const target = event.target;
+
+                    // Si on touche à une checkbox service ou au switch dépose
+                    if (target.classList.contains('service-checkbox') || target.classList.contains('removal-switch')) {
+                        updateTotals();
+                        // Si une date est déjà choisie, on doit recharger les créneaux car la durée a changé
+                        if(document.getElementById('reservation_dateRdv').value) {
+                            fetchAvailableSlots();
+                        }
+                    }
+
+                    // Si on change le moyen de paiement
+                    if (target.name === 'reservation[paymentMethod]') {
+                        const cbBlock = document.getElementById('credit-card-fields');
+                        if(cbBlock) cbBlock.style.display = (target.value === 'online') ? 'block' : 'none';
+                    }
+                });
+            }
+
+            // 2. ÉCOUTEUR SPÉCIFIQUE POUR LA DATE (AJAX)
+            const dateInput = document.getElementById('reservation_dateRdv');
+            if (dateInput) {
+                dateInput.addEventListener('change', fetchAvailableSlots);
+            } else {
+                console.error("Erreur: Champ date #reservation_dateRdv introuvable");
+            }
+        });
+
+        // --- FONCTION 1 : CALCUL DU PRIX ET DURÉE ---
+        function updateTotals() {
+            let price = 0;
+            let duration = 0;
+
+            // Services
+            document.querySelectorAll('.service-checkbox:checked').forEach(cb => {
+                price += parseFloat(cb.getAttribute('data-price')) || 0;
+                duration += parseInt(cb.getAttribute('data-duration')) || 0;
+            });
+
+            // Dépose
+            const removal = document.querySelector('.removal-switch');
+            if (removal && removal.checked) {
+                price += parseFloat(removal.getAttribute('data-price')) || 10;
+                duration += parseInt(removal.getAttribute('data-duration')) || 20;
+            }
+
+            // 3. APPLICATION DE L'ARRONDI AU 1/4 D'HEURE SUPÉRIEUR
+            // Ex: 65 min / 15 = 4.33 -> Plafond(4.33) = 5 -> 5 * 15 = 75 min
+            let finalDuration = 0;
+            if (duration > 0) {
+                finalDuration = Math.ceil(duration / 15) * 15;
+            }
+
+            totalPrice = price;
+            totalDuration = finalDuration;
+            const formattedDuration = formatDuration(finalDuration);
+
+            console.log(`Brut: ${duration}min -> Arrondi: ${finalDuration}min`);
+
+            // Affichage
+            const idsToCheck = ['live-total-price', 'live-total-duration', 'total-price', 'total-duration'];
+            idsToCheck.forEach(id => {
+                const el = document.getElementById(id);
+                if(el) el.textContent = id.includes('price') ? price + ' €' : formattedDuration;
+            });
+
+            // Validation bouton étape 1
+            const btnStep1 = document.querySelector('#step-1 .btn-next');
+            if(btnStep1) btnStep1.disabled = (duration === 0);
+        }
+
+        // --- FONCTION 2 : RÉCUPÉRATION AJAX DES CRÉNEAUX ---
+        function fetchAvailableSlots() {
+            const dateInput = document.getElementById('reservation_dateRdv');
+            const slotSelect = document.getElementById('reservation_timeSlot');
+            const btnStep2 = document.getElementById('btn-step-2');
+
+            const dateVal = dateInput.value;
+
+            // Sécurités
+            if (!dateVal) return;
+            if (totalDuration === 0) {
+                alert("Veuillez d'abord sélectionner au moins un soin.");
+                dateInput.value = ""; // Reset date
+                return;
+            }
+
+            // Feedback visuel
+            slotSelect.innerHTML = '<option>Recherche des créneaux...</option>';
+            slotSelect.disabled = true;
+
+            // Appel AJAX
+            const url = `/booking/available-slots?date=${dateVal}&duration=${totalDuration}`;
+            console.log("Appel AJAX vers : " + url);
+
+            fetch(url)
+                .then(response => {
+                    if (!response.ok) throw new Error("Erreur serveur (404/500)");
+                    return response.json();
+                })
+                .then(data => {
+                    console.log("Données reçues :", data);
+                    slotSelect.innerHTML = ''; // Vider
+
+                    if (data.length === 0) {
+                        slotSelect.innerHTML = '<option value="">Aucun créneau dispo (ou fermé)</option>';
+                    } else {
+                        // Option par défaut
+                        const defaultOpt = document.createElement('option');
+                        defaultOpt.text = "-- Choisir une heure --";
+                        defaultOpt.value = "";
+                        slotSelect.appendChild(defaultOpt);
+
+                        // Remplissage
+                        data.forEach(slot => {
+                            const option = document.createElement('option');
+                            option.value = slot.time;
+                            option.text = slot.label;
+                            slotSelect.appendChild(option);
+                        });
+
+                        slotSelect.disabled = false;
+
+                        // Déblocage du bouton suivant au changement
+                        slotSelect.onchange = function() {
+                            btnStep2.disabled = (this.value === "");
+                        };
+                    }
+                })
+                .catch(error => {
+                    console.error('Erreur AJAX:', error);
+                    slotSelect.innerHTML = '<option>Erreur technique (Voir console)</option>';
+                });
+        }
+
+        function formatDuration(minutes) {
+            const h = Math.floor(minutes / 60);
+            const m = minutes % 60;
+            return (h > 0 ? h + 'h' : '') + (m > 0 ? (m < 10 ? '0'+m : m) : '00');
+        }
+
+        // --- NAVIGATION ---
+        function nextStep(step) {
+            if (step === 2) {
+                // 1. Vérifier qu'un service est choisi
+                if (totalDuration === 0) {
+                    alert("Veuillez choisir au moins une prestation.");
+                    return;
+                }
+
+                // 2. Vérifier le Code Postal (Critique)
+                const zipInput = document.getElementById('reservation_visitZipcode');
+                const errorMsg = document.getElementById('zip-error-msg');
+                const userZip = zipInput.value.trim();
+
+                if (!ALLOWED_ZIPCODES.includes(userZip)) {
+                    // Zone non desservie
+                    zipInput.classList.add('is-invalid'); // Classe Bootstrap rouge
+                    zipInput.style.borderColor = 'red';
+                    errorMsg.style.display = 'block';
+                    errorMsg.textContent = "Nous ne nous déplaçons pas dans la zone " + userZip + " (uniquement Troyes + 20km).";
+                    return; // BLOQUE L'ACCÈS AU CALENDRIER
+                } else {
+                    // Zone OK
+                    zipInput.classList.remove('is-invalid');
+                    zipInput.style.borderColor = '#ccc';
+                    errorMsg.style.display = 'none';
+                }
+            }
+            // Validation étape 2
+            if (step === 3) {
+                const slotSelect = document.getElementById('reservation_timeSlot');
+                const dateInput = document.getElementById('reservation_dateRdv');
+
+                if(!dateInput.value) {
+                    alert("Veuillez choisir une date.");
+                    return;
+                }
+                if(!slotSelect.value) {
+                    alert("Veuillez choisir une heure de rendez-vous.");
+                    return;
+                }
+            }
+            // --- VALIDATION ÉTAPE 3 vers 4 (Coordonnées) ---
+            if (step === 4) {
+                const step3Div = document.getElementById('step-3');
+                // On sélectionne tous les champs requis visibles dans l'étape 3
+                const inputs = step3Div.querySelectorAll('input[required], select[required], textarea[required]');
+
+                let allValid = true;
+
+                for (const input of inputs) {
+                    // checkValidity() vérifie si le champ respecte le required, le pattern, etc.
+                    if (!input.checkValidity()) {
+                        allValid = false;
+                        // reportValidity() affiche la petite bulle d'erreur native du navigateur ("Veuillez remplir ce champ")
+                        input.reportValidity();
+                        break; // On s'arrête à la première erreur pour ne pas agresser l'utilisateur
+                    }
+                }
+
+                if (!allValid) {
+                    return; // On bloque le passage à l'étape suivante
+                }
+            }
+            showStep(step);
+        }
+
+        function prevStep(step) { showStep(step); }
+
+        function showStep(step) {
+            document.querySelectorAll('.form-step').forEach(el => el.classList.remove('active'));
+            document.getElementById('step-' + step).classList.add('active');
+            document.querySelectorAll('.progress-steps .step').forEach(el => {
+                el.classList.toggle('active', parseInt(el.dataset.step) <= step);
+            });
+            const fill = document.getElementById('progressFill');
+            if(fill) fill.style.width = ((step-1) * 33) + '%';
+            if (step === 4) updateFinalSummary();
+            currentStep = step;
+        }
+
+        function updateFinalSummary() {
+            // 1. Récupération des éléments
+            const dateInput = document.getElementById('reservation_dateRdv');
+            const slotSelect = document.getElementById('reservation_timeSlot');
+            const addressInput = document.getElementById('reservation_visitAddress');
+            const cityInput = document.getElementById('reservation_visitCity');
+
+            // 2. Traitement de la DATE (Formatage Français)
+            let dateTxt = '...';
+
+            if (dateInput && dateInput.value) {
+                // Astuce : on ajoute 'T12:00:00' pour fixer l'heure à midi.
+                // Cela empêche les bugs de décalage horaire (qui affichent parfois la veille).
+                const dateObj = new Date(dateInput.value + 'T12:00:00');
+
+                // Conversion en texte : "vendredi 5 décembre 2025"
+                const dateString = dateObj.toLocaleDateString('fr-FR', {
+                    weekday: 'long',
+                    day: 'numeric',
+                    month: 'long',
+                    year: 'numeric'
+                });
+
+                // Met la première lettre en majuscule : "Vendredi..."
+                dateTxt = dateString.charAt(0).toUpperCase() + dateString.slice(1);
+            }
+
+            // 3. Traitement de l'HEURE
+            let timeTxt = '...';
+            if (slotSelect && slotSelect.selectedIndex >= 0) {
+                // On récupère le texte visible de l'option (ex: "14:00")
+                timeTxt = slotSelect.options[slotSelect.selectedIndex].text;
+            }
+
+            // 4. Traitement de l'ADRESSE
+            // On met des valeurs par défaut vides si les champs n'existent pas encore
+            const address = addressInput ? addressInput.value : '';
+            const city = cityInput ? cityInput.value : '';
+
+            // 5. Génération du HTML
+            const summaryHTML = `
+        <p><strong>Soins :</strong> ${totalPrice}€ (${formatDuration(totalDuration)})</p>
+        <p><strong>Quand :</strong> Le ${dateTxt} à ${timeTxt}</p>
+        <p><strong>Où :</strong> ${address} à ${city}</p>
+    `;
+
+            // 6. Injection dans la page
+            const summaryEl = document.getElementById('final-summary');
+            if(summaryEl) summaryEl.innerHTML = summaryHTML;
+        }
+        document.addEventListener('DOMContentLoaded', function() {
+
+            // --- 1. FORMATAGE NUMÉRO DE CARTE (Espacement par 4) ---
+            const ccNumberInput = document.getElementById('cc-number');
+            if (ccNumberInput) {
+                ccNumberInput.addEventListener('input', function (e) {
+                    // A. On retire tout ce qui n'est pas un chiffre
+                    let value = e.target.value.replace(/\D/g, '');
+
+                    // B. On ajoute un espace tous les 4 chiffres
+                    // La regex (.{4}) capture des groupes de 4 caractères
+                    let formattedValue = value.match(/.{1,4}/g)?.join(' ') || '';
+
+                    // C. On remet la valeur formatée dans le champ
+                    e.target.value = formattedValue;
+                });
+            }
+
+            // --- 2. FORMATAGE DATE (Ajout du Slash) ---
+            const ccExpiryInput = document.getElementById('cc-expiry');
+            if (ccExpiryInput) {
+                ccExpiryInput.addEventListener('input', function (e) {
+                    // A. On retire tout ce qui n'est pas un chiffre
+                    let value = e.target.value.replace(/\D/g, '');
+
+                    // B. Si on a plus de 2 chiffres (le mois), on ajoute le slash
+                    if (value.length > 2) {
+                        value = value.substring(0, 2) + ' / ' + value.substring(2, 4);
+                    }
+
+                    // C. Mise à jour du champ
+                    e.target.value = value;
+                });
+
+                // Petit bonus : gestion de la touche "Effacer" pour ne pas bloquer sur le slash
+                ccExpiryInput.addEventListener('keydown', function(e) {
+                    if (e.key === "Backspace" && this.value.endsWith(' / ')) {
+                        this.value = this.value.slice(0, -3); // On efface le slash d'un coup
+                    }
+                });
+            }
+
+            // --- 3. FORMATAGE CVC (Chiffres uniquement) ---
+            const ccCvcInput = document.getElementById('cc-cvc');
+            if(ccCvcInput) {
+                ccCvcInput.addEventListener('input', function(e) {
+                    e.target.value = e.target.value.replace(/\D/g, ''); // Que des chiffres
+                });
+            }
+        });
+    </script>
+{% endblock %}
