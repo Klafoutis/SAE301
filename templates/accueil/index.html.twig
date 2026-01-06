@@ -1,7 +1,5 @@
 {% extends 'base.html.twig' %}
-
 {% block title %}Accueil{% endblock %}
-
 {% block body %}
     <section class="hero">
         <div>
@@ -25,14 +23,11 @@
     </section>
     <section class="acc3">
         <h1>Mes Services</h1>
-
         <div class="carousel-wrapper">
             <button class="nav-btn prev-btn" id="prevBtn" aria-label="Précédent">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
             </button>
-
             <div class="card-container">
-
                 <div class="card" data-pos="prev">
                     <div class="card-image-wrapper">
                         <img src="{{ asset('images/NailArt.jpg') }}" alt="Nail Art">
@@ -43,7 +38,6 @@
                         <button class="action-btn">Réserver</button>
                     </div>
                 </div>
-
                 <div class="card" data-pos="active">
                     <div class="card-image-wrapper">
                         <img src="{{ asset('images/French.jpg') }}" alt="French Manucure">
@@ -54,7 +48,6 @@
                         <button class="action-btn">Réserver</button>
                     </div>
                 </div>
-
                 <div class="card" data-pos="next">
                     <div class="card-image-wrapper">
                         <img src="{{ asset('images/BabyBoomer.jpg') }}" alt="Baby Boomer">
@@ -65,68 +58,11 @@
                         <button class="action-btn">Réserver</button>
                     </div>
                 </div>
-
             </div>
-
             <button class="nav-btn next-btn" id="nextBtn" aria-label="Suivant">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
             </button>
         </div>
-
-        <script>
-            const cards = document.querySelectorAll('.card');
-            const prevBtn = document.getElementById('prevBtn');
-            const nextBtn = document.getElementById('nextBtn');
-
-            let currentIndex = Array.from(cards).findIndex(card => card.getAttribute('data-pos') === 'active');
-
-            if (currentIndex === -1) currentIndex = 1;
-
-            function updateCarousel() {
-                cards.forEach((card, index) => {
-                    let newPos = 'hidden';
-
-                    if (index === currentIndex) {
-                        newPos = 'active';
-                    } else if (index === getPrevIndex(currentIndex)) {
-                        newPos = 'prev';
-                    } else if (index === getNextIndex(currentIndex)) {
-                        newPos = 'next';
-                    }
-
-                    card.setAttribute('data-pos', newPos);
-
-                    card.onclick = () => {
-                        if (newPos === 'prev') {
-                            currentIndex = getPrevIndex(currentIndex);
-                            updateCarousel();
-                        } else if (newPos === 'next') {
-                            currentIndex = getNextIndex(currentIndex);
-                            updateCarousel();
-                        }
-                    };
-                });
-            }
-
-            function getPrevIndex(index) {
-                return index === 0 ? cards.length - 1 : index - 1;
-            }
-
-            function getNextIndex(index) {
-                return index === cards.length - 1 ? 0 : index + 1;
-            }
-
-            prevBtn.addEventListener('click', () => {
-                currentIndex = getPrevIndex(currentIndex);
-                updateCarousel();
-            });
-
-            nextBtn.addEventListener('click', () => {
-                currentIndex = getNextIndex(currentIndex);
-                updateCarousel();
-            });
-
-            updateCarousel();
-        </script>
+        <script>const cards=document.querySelectorAll(".card"),prevBtn=document.getElementById("prevBtn"),nextBtn=document.getElementById("nextBtn");let currentIndex=Array.from(cards).findIndex((e=>"active"===e.getAttribute("data-pos")));function updateCarousel(){cards.forEach(((e,t)=>{let n="hidden";t===currentIndex?n="active":t===getPrevIndex(currentIndex)?n="prev":t===getNextIndex(currentIndex)&&(n="next"),e.setAttribute("data-pos",n),e.onclick=()=>{"prev"===n?(currentIndex=getPrevIndex(currentIndex),updateCarousel()):"next"===n&&(currentIndex=getNextIndex(currentIndex),updateCarousel())}}))}function getPrevIndex(e){return 0===e?cards.length-1:e-1}function getNextIndex(e){return e===cards.length-1?0:e+1}-1===currentIndex&&(currentIndex=1),prevBtn.addEventListener("click",(()=>{currentIndex=getPrevIndex(currentIndex),updateCarousel()})),nextBtn.addEventListener("click",(()=>{currentIndex=getNextIndex(currentIndex),updateCarousel()})),updateCarousel();</script>
     </section>
 {% endblock %}

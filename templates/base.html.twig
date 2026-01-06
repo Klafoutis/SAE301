@@ -19,9 +19,8 @@
         <a href="/"><img id="logo" src="{{ asset('images/logo.svg') }}"></a>
         <div>
             <a href="/" class="{{ app.request.pathInfo == '/' ? 'active-link' : '' }}">Accueil</a>
-            <a href="#" class="{{ app.request.pathInfo == '/reservation' ? 'active-link' : '' }}">Reservation</a>
             <a href="/blog" class="{{ app.request.pathInfo starts with '/blog' ? 'active-link' : '' }}">Blog</a>
-            <a href="#" class="{{ app.request.pathInfo == '/admin' ? 'active-link' : '' }}">Back-office</a>
+            <a href="/reservation" class="{{ app.request.pathInfo == '/reservation' ? 'active-link' : '' }}">Réservation</a>
         </div>
     </div>
 </header>
