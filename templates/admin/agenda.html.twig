@@ -1,0 +1,183 @@
+{# templates/admin/agenda.html.twig #}
+{% extends '@EasyAdmin/page/content.html.twig' %}
+
+{% block content_title %}Mon Agenda & Tournée{% endblock %}
+
+{% block main %}
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.10/index.global.min.js'></script>
+
+    <style>
+        .page-wrapper { display: flex; flex-direction: column; gap: 30px; }
+
+        /* CALENDRIER */
+        #calendar {
+            background: white; padding: 20px; border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            /* Pas de min-height fixe pour éviter le bug visuel de 19h */
+        }
+
+        /* BAS : LISTE + CARTE */
+        .bottom-section { display: flex; gap: 20px; flex-wrap: wrap; }
+
+        .schedule-list {
+            flex: 1; min-width: 300px; max-height: 500px; overflow-y: auto;
+            padding-right: 10px; /* Pour l'ascenseur */
+        }
+
+        .map-container {
+            flex: 2; min-width: 300px; height: 500px;
+            border-radius: 8px; border: 2px solid #ddd; z-index: 1;
+        }
+
+        /* CARTES RDV */
+        .rdv-card {
+            background: white; padding: 15px; margin-bottom: 10px;
+            border-left: 5px solid #3788d8; border-radius: 4px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            cursor: pointer; transition: all 0.2s;
+        }
+        .rdv-card:hover { transform: translateX(5px); background-color: #f8f9fa; }
+        .rdv-card.active { border-left-color: #28a745; background-color: #e8f5e9; } /* Style quand cliqué */
+
+        .rdv-time { font-weight: bold; font-size: 1.1em; color: #333; }
+        .rdv-address { color: #666; font-size: 0.9em; margin-top: 5px; }
+    </style>
+
+    <div class="page-wrapper">
+        <div id="calendar"></div>
+
+        <div class="bottom-section">
+            <div class="schedule-list">
+                <h3>📋 Liste des visites</h3>
+                {% for rdv in reservations %}
+                    <div class="rdv-card"
+                         id="card-{{ rdv.id }}"
+                         data-id="{{ rdv.id }}"
+                         data-address="{{ rdv.visitAddress }}"
+                         data-name="{{ rdv.guestFirstname }} {{ rdv.guestLastname }}"
+                         data-time="{{ rdv.dateRdv|date('H:i') }}"
+                         onclick="focusOnMarker({{ rdv.id }})">
+
+                        <div class="rdv-time">{{ rdv.dateRdv|date('H:i') }} - {{ rdv.guestFirstname }} {{ rdv.guestLastname }}</div>
+
+                        {# Vérifiez bien que c'est s.title ou s.nom selon votre entité #}
+                        <div>{{ rdv.services|map(s => s.title)|join(', ') }}</div>
+
+                        <div class="rdv-address">📍 {{ rdv.visitAddress }}</div>
+                    </div>
+                {% else %}
+                    <div class="alert alert-info">Aucun RDV prévu.</div>
+                {% endfor %}
+            </div>
+
+            <div id="map" class="map-container"></div>
+        </div>
+    </div>
+
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+
+            // --- 1. FULLCALENDAR ---
+            var calendarEl = document.getElementById('calendar');
+            var calendar = new FullCalendar.Calendar(calendarEl, {
+                initialView: 'timeGridWeek',
+                locale: 'fr',
+                firstDay: 1,
+                slotMinTime: '08:00:00',
+                slotMaxTime: '20:00:00',
+                height: 'auto', // Important pour la taille
+                headerToolbar: {
+                    left: 'prev,next today',
+                    center: 'title',
+                    right: 'dayGridMonth,timeGridWeek'
+                },
+                events: {{ calendar_events|raw }}
+            });
+            calendar.render();
+
+
+            // --- 2. LEAFLET MAP ---
+            var map = L.map('map').setView([48.2973, 4.0744], 13); // Centré sur Troyes
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '© OpenStreetMap'
+            }).addTo(map);
+
+            var icon = L.icon({
+                iconUrl: 'https://unpkg.com/leaflet@1.7.1/dist/images/marker-icon.png',
+                iconSize: [25, 41], iconAnchor: [12, 41], popupAnchor: [1, -34]
+            });
+
+            // --- 3. GESTION DES MARQUEURS ET INTERACTION ---
+
+            // On stocke tous les marqueurs ici : { id_reservation: objet_marker }
+            var markers = {};
+
+            // On récupère toutes les cartes HTML
+            var cards = document.querySelectorAll('.rdv-card');
+
+            // Fonction pour ajouter un point sur la carte
+            function addMarker(id, address, name, time) {
+                // Appel API Nominatim
+                fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(address)}`)
+                    .then(r => r.json())
+                    .then(data => {
+                        if (data && data.length > 0) {
+                            var lat = data[0].lat;
+                            var lon = data[0].lon;
+
+                            // Création du marqueur
+                            var marker = L.marker([lat, lon], {icon: icon}).addTo(map);
+
+                            // Contenu de la bulle
+                            marker.bindPopup(`
+                                <div style="text-align:center">
+                                    <strong style="font-size:1.2em">${time}</strong><br>
+                                    ${name}<br>
+                                    <em style="color:#666">${address}</em>
+                                </div>
+                            `);
+
+                            // SAUVEGARDE DU MARQUEUR DANS NOTRE OBJET "MARKERS"
+                            markers[id] = marker;
+                        }
+                    })
+                    .catch(err => console.error(err));
+            }
+
+            // On lance la création des points pour chaque carte
+            cards.forEach((card, index) => {
+                // Petit délai pour ne pas bloquer l'API (Rate Limit)
+                setTimeout(() => {
+                    addMarker(
+                        card.dataset.id,
+                        card.dataset.address,
+                        card.dataset.name,
+                        card.dataset.time
+                    );
+                }, index * 600);
+            });
+
+            // --- 4. FONCTION APPELÉE AU CLIC SUR LA LISTE ---
+            window.focusOnMarker = function(id) {
+                var marker = markers[id]; // On retrouve le marqueur grâce à l'ID
+
+                // 1. Gestion visuelle de la liste (surligner l'élément actif)
+                document.querySelectorAll('.rdv-card').forEach(c => c.classList.remove('active'));
+                document.getElementById('card-' + id).classList.add('active');
+
+                if (marker) {
+                    // 2. Zoom sur la carte
+                    map.flyTo(marker.getLatLng(), 16, {
+                        duration: 1.5 // Vitesse de l'animation
+                    });
+
+                    // 3. Ouvrir la bulle d'info
+                    marker.openPopup();
+                } else {
+                    console.log("Marqueur pas encore chargé ou adresse introuvable pour l'ID " + id);
+                }
+            };
+        });
+    </script>
+{% endblock %}

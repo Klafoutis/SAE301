@@ -28,7 +28,7 @@
   <component name="Git.Settings">
     <option name="RECENT_BRANCH_BY_REPOSITORY">
       <map>
-        <entry key="$PROJECT_DIR$" value="form" />
+        <entry key="$PROJECT_DIR$" value="main" />
       </map>
     </option>
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
@@ -342,7 +342,9 @@
 }</component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
-      <recent name="$PROJECT_DIR$/assets/images" />
+      <recent name="$PROJECT_DIR$/templates/admin" />
+      <recent name="$PROJECT_DIR$/config/packages" />
+      <recent name="$PROJECT_DIR$/templates/reservation" />
     </key>
   </component>
   <component name="SharedIndexes">
@@ -444,10 +446,10 @@
     <MESSAGE value="ajout du controller formulaire" />
     <MESSAGE value="test de commit" />
     <MESSAGE value="test de commit stp" />
-    <MESSAGE value="commit" />
-    <MESSAGE value="Accueil finit et footer 75%" />
-    <MESSAGE value="Accueil finit / footer 90" />
-    <option name="LAST_COMMIT_MESSAGE" value="Accueil finit / footer 90" />
+    <MESSAGE value="ff je vais tout recommencer -&gt; code avant que je recommence" />
+    <MESSAGE value="Ça maaaaarrrrrrrchheeeeeeeeeeeeeee" />
+    <MESSAGE value="création admin" />
+    <option name="LAST_COMMIT_MESSAGE" value="création admin" />
   </component>
   <component name="github-copilot-workspace">
     <instructionFileLocations>
