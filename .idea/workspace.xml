@@ -27,6 +27,7 @@
       </map>
     </option>
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+    <option name="UPDATE_TYPE" value="REBASE" />
   </component>
   <component name="GitHubPullRequestSearchHistory">{
   &quot;lastFilter&quot;: {
@@ -36,8 +37,8 @@
 }</component>
   <component name="GithubPullRequestsUISettings">{
   &quot;selectedUrlAndAccountId&quot;: {
-    &quot;url&quot;: &quot;git@github.com:Klafoutis/SAE301.git&quot;,
-    &quot;accountId&quot;: &quot;e92c471a-a605-429c-9a44-74ec807aee27&quot;
+    &quot;url&quot;: &quot;https://github.com/Klafoutis/SAE301.git&quot;,
+    &quot;accountId&quot;: &quot;a461fafe-3df7-49df-9dd4-0a7d2183347a&quot;
   }
 }</component>
   <component name="PhpWorkspaceProjectConfiguration">

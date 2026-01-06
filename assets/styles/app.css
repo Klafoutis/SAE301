@@ -1,5 +1,5 @@
 @charset "UTF-8";
-/* Header / Général */
+/* Header / Général / Footer */
 html, body {
   margin: 0;
   padding: 0;
@@ -35,7 +35,45 @@ a {
   color: #774D9A;
 }
 
-/* Accueil */
+footer {
+  height: 50vh;
+  background-color: #B8B7BA;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  align-items: center;
+  justify-content: center;
+}
+footer > div:nth-child(1) {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  align-items: center;
+}
+footer > div:nth-child(1) > div {
+  font-size: 30px;
+  width: 60%;
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+}
+footer > div:nth-child(2) {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+footer > div:nth-child(2) a {
+  font-size: 40px;
+  text-align: center;
+}
+footer > div:nth-child(3) {
+  display: flex;
+  justify-content: center;
+}
+footer > div:nth-child(3) img {
+  width: 60%;
+  margin: auto;
+  display: block;
+}
 .hero {
   height: 85vh;
   background: url("../images/BabyBoomer2.jpg") no-repeat center;

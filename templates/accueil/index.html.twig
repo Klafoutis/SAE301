@@ -25,5 +25,108 @@
     </section>
     <section class="acc3">
         <h1>Mes Services</h1>
+
+        <div class="carousel-wrapper">
+            <button class="nav-btn prev-btn" id="prevBtn" aria-label="Précédent">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
+            </button>
+
+            <div class="card-container">
+
+                <div class="card" data-pos="prev">
+                    <div class="card-image-wrapper">
+                        <img src="{{ asset('images/NailArt.jpg') }}" alt="Nail Art">
+                    </div>
+                    <div class="card-content">
+                        <h3>Nail Art</h3>
+                        <p>Un nail art unique, créatif et personnalisé, conçu pour refléter votre univers et votre personnalité.</p>
+                        <button class="action-btn">Réserver</button>
+                    </div>
+                </div>
+
+                <div class="card" data-pos="active">
+                    <div class="card-image-wrapper">
+                        <img src="{{ asset('images/French.jpg') }}" alt="French Manucure">
+                    </div>
+                    <div class="card-content">
+                        <h3>French</h3>
+                        <p>Propre, élégante et intemporelle, adaptée à votre style et à toutes les occasions.</p>
+                        <button class="action-btn">Réserver</button>
+                    </div>
+                </div>
+
+                <div class="card" data-pos="next">
+                    <div class="card-image-wrapper">
+                        <img src="{{ asset('images/BabyBoomer.jpg') }}" alt="Baby Boomer">
+                    </div>
+                    <div class="card-content">
+                        <h3>Baby Boomer</h3>
+                        <p>Un baby boomer doux et dégradé, pour un rendu naturel, raffiné et lumineux qui sublime vos mains.</p>
+                        <button class="action-btn">Réserver</button>
+                    </div>
+                </div>
+
+            </div>
+
+            <button class="nav-btn next-btn" id="nextBtn" aria-label="Suivant">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
+            </button>
+        </div>
+
+        <script>
+            const cards = document.querySelectorAll('.card');
+            const prevBtn = document.getElementById('prevBtn');
+            const nextBtn = document.getElementById('nextBtn');
+
+            let currentIndex = Array.from(cards).findIndex(card => card.getAttribute('data-pos') === 'active');
+
+            if (currentIndex === -1) currentIndex = 1;
+
+            function updateCarousel() {
+                cards.forEach((card, index) => {
+                    let newPos = 'hidden';
+
+                    if (index === currentIndex) {
+                        newPos = 'active';
+                    } else if (index === getPrevIndex(currentIndex)) {
+                        newPos = 'prev';
+                    } else if (index === getNextIndex(currentIndex)) {
+                        newPos = 'next';
+                    }
+
+                    card.setAttribute('data-pos', newPos);
+
+                    card.onclick = () => {
+                        if (newPos === 'prev') {
+                            currentIndex = getPrevIndex(currentIndex);
+                            updateCarousel();
+                        } else if (newPos === 'next') {
+                            currentIndex = getNextIndex(currentIndex);
+                            updateCarousel();
+                        }
+                    };
+                });
+            }
+
+            function getPrevIndex(index) {
+                return index === 0 ? cards.length - 1 : index - 1;
+            }
+
+            function getNextIndex(index) {
+                return index === cards.length - 1 ? 0 : index + 1;
+            }
+
+            prevBtn.addEventListener('click', () => {
+                currentIndex = getPrevIndex(currentIndex);
+                updateCarousel();
+            });
+
+            nextBtn.addEventListener('click', () => {
+                currentIndex = getNextIndex(currentIndex);
+                updateCarousel();
+            });
+
+            updateCarousel();
+        </script>
     </section>
 {% endblock %}
