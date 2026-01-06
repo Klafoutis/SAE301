@@ -18,10 +18,10 @@
     <div>
         <a href="/"><img id="logo" src="{{ asset('images/logo.svg') }}"></a>
         <div>
-            <a href="/">Accueil</a>
-            <a href="#">Reservation</a>
-            <a href="#">Blog</a>
-            <a href="#">Back-office</a>
+            <a href="/" class="{{ app.request.pathInfo == '/' ? 'active-link' : '' }}">Accueil</a>
+            <a href="#" class="{{ app.request.pathInfo == '/reservation' ? 'active-link' : '' }}">Reservation</a>
+            <a href="/blog" class="{{ app.request.pathInfo starts with '/blog' ? 'active-link' : '' }}">Blog</a>
+            <a href="#" class="{{ app.request.pathInfo == '/admin' ? 'active-link' : '' }}">Back-office</a>
         </div>
     </div>
 </header>
@@ -44,7 +44,8 @@
         </div>
     </div>
     <div>
-
+        <a href="mailto:naislpro@gmail.com">naislpro@gmail.com</a>
+        <a href="tel:+3376869061">+ 33 76 86 90 61</a>
     </div>
     <div href="/"><img id="logo" src="{{ asset('images/logo.svg') }}"></div>
 </footer>
