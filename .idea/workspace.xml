@@ -5,15 +5,10 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="9096232e-dee7-4bfb-893a-9e2cdf38bb0e" name="Changes" comment="Ça maaaaarrrrrrrchheeeeeeeeeeeeeee">
-      <change afterPath="$PROJECT_DIR$/config/packages/twig_component.yaml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/templates/admin/agenda.html.twig" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/php.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/php.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/composer.json" beforeDir="false" afterPath="$PROJECT_DIR$/composer.json" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/composer.lock" beforeDir="false" afterPath="$PROJECT_DIR$/composer.lock" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/config/bundles.php" beforeDir="false" afterPath="$PROJECT_DIR$/config/bundles.php" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/config/reference.php" beforeDir="false" afterPath="$PROJECT_DIR$/config/reference.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/config/routes.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/config/routes.yaml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/symfony.lock" beforeDir="false" afterPath="$PROJECT_DIR$/symfony.lock" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -32,6 +27,7 @@
       </map>
     </option>
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+    <option name="UPDATE_TYPE" value="REBASE" />
   </component>
   <component name="GitHubPullRequestSearchHistory">{
   &quot;lastFilter&quot;: {
@@ -41,8 +37,8 @@
 }</component>
   <component name="GithubPullRequestsUISettings">{
   &quot;selectedUrlAndAccountId&quot;: {
-    &quot;url&quot;: &quot;git@github.com:Klafoutis/SAE301.git&quot;,
-    &quot;accountId&quot;: &quot;e92c471a-a605-429c-9a44-74ec807aee27&quot;
+    &quot;url&quot;: &quot;https://github.com/Klafoutis/SAE301.git&quot;,
+    &quot;accountId&quot;: &quot;a461fafe-3df7-49df-9dd4-0a7d2183347a&quot;
   }
 }</component>
   <component name="PhpWorkspaceProjectConfiguration">
@@ -308,11 +304,11 @@
       <path value="$PROJECT_DIR$/vendor/doctrine/doctrine-fixtures-bundle" />
       <path value="$PROJECT_DIR$/vendor/doctrine/data-fixtures" />
       <path value="$PROJECT_DIR$/vendor/twig/intl-extra" />
-      <path value="$PROJECT_DIR$/vendor/symfony/ux-twig-component" />
-      <path value="$PROJECT_DIR$/vendor/easycorp/easyadmin-bundle" />
       <path value="$PROJECT_DIR$/vendor/twig/html-extra" />
-      <path value="$PROJECT_DIR$/vendor/symfony/uid" />
+      <path value="$PROJECT_DIR$/vendor/easycorp/easyadmin-bundle" />
       <path value="$PROJECT_DIR$/vendor/symfony/polyfill-uuid" />
+      <path value="$PROJECT_DIR$/vendor/symfony/ux-twig-component" />
+      <path value="$PROJECT_DIR$/vendor/symfony/uid" />
     </include_path>
   </component>
   <component name="ProblemsViewState">
@@ -332,8 +328,8 @@
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252": "true",
     "RunOnceActivity.git.unshallow": "true",
-    "git-widget-placeholder": "form",
-    "last_opened_file_path": "/home/peuv0003/buts3/www/sae301/templates/admin",
+    "git-widget-placeholder": "main",
+    "last_opened_file_path": "/home/peuv0003/buts3/www/sae301/templates/reservation",
     "node.js.detected.package.eslint": "true",
     "node.js.detected.package.tslint": "true",
     "node.js.selected.package.eslint": "(autodetect)",
@@ -375,6 +371,7 @@
       <workItem from="1765955713649" duration="3299000" />
       <workItem from="1767352355058" duration="7604000" />
       <workItem from="1767602916787" duration="3765000" />
+      <workItem from="1767695518231" duration="753000" />
     </task>
     <task id="LOCAL-00001" summary="test">
       <option name="closed" value="true" />
