@@ -8,6 +8,12 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Karla:ital,wght@0,200..800;1,200..800&display=swap" rel="stylesheet">
     {% block stylesheets %}
+        <link rel="stylesheet" href="{{ asset('css/app.css') }}">
+        <style>
+            html {
+                background-color: #f0e5fa;
+            }
+        </style>
     {% endblock %}
 
     {% block javascripts %}
@@ -15,7 +21,7 @@
     {% endblock %}
 </head>
 <header>
-    <div>
+    <div data-turbo="false">
         <a href="/"><img id="logo" src="{{ asset('images/logo.svg') }}"></a>
         <div>
             <a href="/" class="{{ app.request.pathInfo == '/' ? 'active-link' : '' }}">Accueil</a>

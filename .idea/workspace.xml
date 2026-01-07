@@ -4,7 +4,12 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="9096232e-dee7-4bfb-893a-9e2cdf38bb0e" name="Changes" comment="" />
+    <list default="true" id="9096232e-dee7-4bfb-893a-9e2cdf38bb0e" name="Changes" comment="modif du blog">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/templates/accueil/index.html.twig" beforeDir="false" afterPath="$PROJECT_DIR$/templates/accueil/index.html.twig" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/templates/base.html.twig" beforeDir="false" afterPath="$PROJECT_DIR$/templates/base.html.twig" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/templates/reservation/new.html.twig" beforeDir="false" afterPath="$PROJECT_DIR$/templates/reservation/new.html.twig" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -17,7 +22,7 @@
   <component name="Git.Settings">
     <option name="RECENT_BRANCH_BY_REPOSITORY">
       <map>
-        <entry key="$PROJECT_DIR$" value="main" />
+        <entry key="$PROJECT_DIR$" value="form" />
       </map>
     </option>
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
@@ -28,12 +33,12 @@
     &quot;assignee&quot;: &quot;Klafoutis&quot;
   }
 }</component>
-  <component name="GithubPullRequestsUISettings">{
-  &quot;selectedUrlAndAccountId&quot;: {
-    &quot;url&quot;: &quot;https://github.com/Klafoutis/SAE301.git&quot;,
-    &quot;accountId&quot;: &quot;a461fafe-3df7-49df-9dd4-0a7d2183347a&quot;
+  <component name="GithubPullRequestsUISettings"><![CDATA[{
+  "selectedUrlAndAccountId": {
+    "url": "git@github.com:Klafoutis/SAE301.git",
+    "accountId": "e92c471a-a605-429c-9a44-74ec807aee27"
   }
-}</component>
+}]]></component>
   <component name="PhpWorkspaceProjectConfiguration">
     <include_path>
       <path value="$PROJECT_DIR$/vendor/phar-io/manifest" />
@@ -318,7 +323,7 @@
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252": "true",
     "RunOnceActivity.git.unshallow": "true",
-    "git-widget-placeholder": "form",
+    "git-widget-placeholder": "main",
     "last_opened_file_path": "/home/delo0087/buts3/www/SAE301/assets/images",
     "node.js.detected.package.eslint": "true",
     "node.js.detected.package.tslint": "true",
@@ -363,6 +368,7 @@
       <workItem from="1767554512143" duration="205000" />
       <workItem from="1767603097898" duration="5113000" />
       <workItem from="1767695564840" duration="1878000" />
+      <workItem from="1767775682113" duration="1798000" />
     </task>
     <task id="LOCAL-00001" summary="test">
       <option name="closed" value="true" />
@@ -420,7 +426,15 @@
       <option name="project" value="LOCAL" />
       <updated>1767726969718</updated>
     </task>
-    <option name="localTasksCounter" value="8" />
+    <task id="LOCAL-00008" summary="modif du blog">
+      <option name="closed" value="true" />
+      <created>1767775956320</created>
+      <option name="number" value="00008" />
+      <option name="presentableId" value="LOCAL-00008" />
+      <option name="project" value="LOCAL" />
+      <updated>1767775956320</updated>
+    </task>
+    <option name="localTasksCounter" value="9" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -446,7 +460,8 @@
     <MESSAGE value="Ça maaaaarrrrrrrchheeeeeeeeeeeeeee" />
     <MESSAGE value="création admin" />
     <MESSAGE value="modif formulmaire" />
-    <option name="LAST_COMMIT_MESSAGE" value="modif formulmaire" />
+    <MESSAGE value="modif du blog" />
+    <option name="LAST_COMMIT_MESSAGE" value="modif du blog" />
   </component>
   <component name="github-copilot-workspace">
     <instructionFileLocations>
