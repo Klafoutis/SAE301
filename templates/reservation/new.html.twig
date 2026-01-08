@@ -620,6 +620,76 @@
             border: 1px solid #adb5bd;
         }
 
+        /* --- STYLE ÉLIGIBILITÉ (SANS MODIFIER LE HTML) --- */
+
+        /* 1. Le Conteneur principal */
+        .zipcode-check-section {
+            /* On ajoute une bordure latérale rose pour le style */
+            border-left: 5px solid var(--primary-color) !important;
+            /* Une ombre portée pour l'effet "carte flottante" */
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+            /* On centre tout le contenu */
+            text-align: center;
+            /* Animation douce */
+            transition: transform 0.3s ease;
+        }
+
+        /* 2. Le Titre h3 */
+        .zipcode-check-section h3 {
+            color: #333;
+            font-size: 1.2rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 1rem;
+        }
+
+        /* 3. L'input (Généré par Symfony à l'intérieur du form_row) */
+        .zipcode-check-section input {
+            display: block;
+            width: 100%;
+            max-width: 200px; /* On limite la largeur pour faire joli */
+            margin: 10px auto; /* Centrage */
+
+            /* Style "Pilule" */
+            border-radius: 50px;
+            border: 2px solid #e9ecef;
+            padding: 10px 20px;
+
+            /* Typographie */
+            text-align: center;
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #333;
+            outline: none;
+            transition: all 0.3s;
+        }
+
+        /* Quand on clique dans l'input */
+        .zipcode-check-section input:focus {
+            box-shadow: 0 0 0 4px rgba(214, 51, 132, 0.1);
+        }
+
+        /* 4. Le Label (Généré par Symfony) */
+        .zipcode-check-section label {
+            font-size: 0.9rem;
+            color: #6c757d;
+            font-weight: normal;
+        }
+
+        /* 5. Le message d'erreur (Surcharge du style en ligne rouge) */
+        #zip-error-msg {
+            /* On remplace le texte rouge simple par une jolie boite */
+            background-color: #fff2f2 !important;
+            color: #dc3545 !important;
+            border: 1px solid #ffc9c9;
+            padding: 10px;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            margin-top: 15px !important;
+            display: inline-block; /* Pour qu'il ne prenne pas toute la largeur */
+        }
+
     </style>
 {% endblock %}
 {% block title %}Réserver une Manucure{% endblock %}
@@ -642,7 +712,15 @@
         {{ form_start(form, {'attr': {'id': 'reservationForm'}}) }}
 
 
+
         <div class="form-step active" id="step-1">
+            <div class="zipcode-check-section" style="background: #f0e5fa; padding: 15px; border-radius: 8px; margin-bottom: 20px;">
+                <h3>Vérifiez votre éligibilité</h3>
+                {{ form_row(form.visitZipcode) }}
+                <div id="zip-error-msg" style="color: red; display: none; font-weight: bold; margin-top: 5px;">
+                    Désolé, cette zone n'est pas desservie.
+                </div>
+            </div><br><br>
             <h2>Composez votre soin</h2>
 
             <div class="services-list">
@@ -684,13 +762,7 @@
                 Total estimé : <span id="live-total-duration">0h00</span> - <span id="live-total-price">0 €</span>
             </div>
 
-            <div class="zipcode-check-section" style="background: #fff0f5; padding: 15px; border-radius: 8px; margin-bottom: 20px;">
-                <h3>Vérifiez votre éligibilité</h3>
-                {{ form_row(form.visitZipcode) }}
-                <div id="zip-error-msg" style="color: red; display: none; font-weight: bold; margin-top: 5px;">
-                    Désolé, cette zone n'est pas desservie.
-                </div>
-            </div>
+
 
             <button type="button" class="btn-next" onclick="nextStep(2)">Voir les disponibilités &rarr;</button>
         </div>
@@ -993,6 +1065,7 @@
                     zipInput.style.borderColor = 'red';
                     errorMsg.style.display = 'block';
                     errorMsg.textContent = "Nous ne nous déplaçons pas dans la zone " + userZip + " (uniquement Troyes + 20km).";
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
                     return; // BLOQUE L'ACCÈS AU CALENDRIER
                 } else {
                     // Zone OK
@@ -1037,6 +1110,7 @@
                     return; // On bloque le passage à l'étape suivante
                 }
             }
+
             showStep(step);
         }
 
@@ -1050,6 +1124,10 @@
             });
             const fill = document.getElementById('progressFill');
             if(fill) fill.style.width = ((step-1) * 33) + '%';
+            const topElement = document.querySelector('.progress-bar-container');
+            setTimeout(() => {
+                document.body.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }, 10);
             if (step === 4) updateFinalSummary();
             currentStep = step;
         }
